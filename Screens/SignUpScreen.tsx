@@ -1,7 +1,14 @@
-import { useNavigation } from '@react-navigation/native';
+import { DefaultTheme, NavigationContainer, useNavigation } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import RNPickerSelect from 'react-native-picker-select';
 import * as Device from 'expo-device';
+import {
+  Appearance,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  TouchableWithoutFeedback,
+} from 'react-native';
 
 import {
   Alert,
@@ -16,6 +23,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { showUniversities, SignUp, updateFcmToken } from '../router/data';
+
 export default function SignUpScreen() {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
@@ -27,6 +35,7 @@ export default function SignUpScreen() {
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation<any>();
   const [universities, setUniversities] = useState<any>([]);
+  // const isDarkMode = Appearance.getColorScheme() === 'dark';
 
   useEffect(() => {
     (async () => {
@@ -114,109 +123,123 @@ export default function SignUpScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>مستخدم جديد</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="الأسم"
-        placeholderTextColor="#aaa"
-        value={name}
-        onChangeText={(text) => setName(text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="رقم الهاتف"
-        keyboardType="numeric"
-        placeholderTextColor="#aaa"
-        value={phone}
-        onChangeText={(text) => setPhone(text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="البريد الالكتروني"
-        keyboardType="email-address"
-        placeholderTextColor="#aaa"
-        value={email}
-        onChangeText={(text) => setEmail(text)}
-      />
-      <RNPickerSelect
-        style={{
-          inputIOS: {
-            width: '90%',
-            marginStart: '5%',
-            height: 50,
-            borderWidth: 1,
-            borderColor: '#ccc',
-            borderRadius: 8,
-            textAlign: 'right',
-            paddingHorizontal: 12,
-            marginBottom: 16,
-            writingDirection: 'rtl',
-            backgroundColor: '#fff',
-          },
-          inputAndroid: {
-            width: '90%',
-            color: 'black',
-            textAlign: 'right',
-            marginStart: '5%',
-            height: 50,
-            writingDirection: 'rtl',
-            borderColor: '#ccc',
-            borderRadius: 8,
-            paddingHorizontal: 12,
-            marginBottom: 16,
-            backgroundColor: '#fff',
-          },
-        }}
-        textInputProps={{
-          textAlign: 'right',
-          // writingDirection: 'rtl',
-        }}
-        placeholder={{
-          label: 'الجامعة',
-          value: null,
-          color: '#aaa',
-        }}
-        onValueChange={(value: any) => setUniversityId(value)}
-        items={universities}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="كلمة المرور"
-        secureTextEntry
-        placeholderTextColor="#aaa"
-        value={password}
-        onChangeText={(text) => setPassword(text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="تأكيد كلمة المرور"
-        secureTextEntry
-        placeholderTextColor="#aaa"
-        value={passwordConfirmation}
-        onChangeText={(text) => setPasswordConfirmation(text)}
-      />
-      <TouchableOpacity
-        style={[styles.button, loading && styles.buttonDisabled]}
-        onPress={handleLogin}
-        disabled={loading}>
-        {loading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.buttonText}>انشاء الحساب</Text>
-        )}
-      </TouchableOpacity>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+          <View style={styles.container}>
+            <Text style={styles.title}>مستخدم جديد</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="الأسم"
+              placeholderTextColor="#aaa"
+              value={name}
+              onChangeText={(text) => setName(text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="رقم الهاتف"
+              keyboardType="numeric"
+              placeholderTextColor="#aaa"
+              value={phone}
+              onChangeText={(text) => setPhone(text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="البريد الالكتروني"
+              keyboardType="email-address"
+              placeholderTextColor="#aaa"
+              value={email}
+              onChangeText={(text) => setEmail(text)}
+            />
+            <RNPickerSelect
+              style={{
+                inputIOS: {
+                  width: '90%',
+                  marginStart: '5%',
+                  height: 50,
+                  borderWidth: 1,
+                  borderColor: '#ccc',
+                  borderRadius: 8,
+                  textAlign: 'right',
+                  paddingHorizontal: 12,
+                  marginBottom: 16,
+                  writingDirection: 'rtl',
+                  backgroundColor: '#fff',
+                  color: 'black',
+                },
+                inputAndroid: {
+                  width: '90%',
+                  color: 'black',
+                  textAlign: 'right',
+                  marginStart: '5%',
+                  height: 50,
+                  writingDirection: 'rtl',
+                  paddingHorizontal: 12,
+                  marginBottom: 16,
+                  backgroundColor: '#fff',
+                  borderWidth: 1,
+                  borderColor: '#ccc',
+                  borderRadius: 8,
+                },
+                inputIOSContainer: {
+                  zIndex: 100,
+                },
+              }}
+              textInputProps={{
+                textAlign: 'right',
+              }}
+              darkTheme={true}
+              // useNativeAndroidPickerStyle={false}
+              placeholder={{
+                label: 'الجامعة',
+                value: null,
+                color: '#aaa',
+              }}
+              onValueChange={(value: any) => setUniversityId(value)}
+              items={universities}
+            />
 
-      <Text style={styles.signupText}>
-        لديك حساب بالفعل؟
-        <TouchableNativeFeedback onPress={() => navigation.navigate('Login')}>
-          <Text style={styles.signupLink}>تسجيل الدخول</Text>
-        </TouchableNativeFeedback>
-      </Text>
-    </View>
+            <TextInput
+              style={styles.input}
+              placeholder="كلمة المرور"
+              secureTextEntry
+              placeholderTextColor="#aaa"
+              value={password}
+              onChangeText={(text) => setPassword(text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="تأكيد كلمة المرور"
+              secureTextEntry
+              placeholderTextColor="#aaa"
+              value={passwordConfirmation}
+              onChangeText={(text) => setPasswordConfirmation(text)}
+            />
+            <TouchableOpacity
+              style={[styles.button, loading && styles.buttonDisabled]}
+              onPress={handleLogin}
+              disabled={loading}>
+              {loading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.buttonText}>انشاء الحساب</Text>
+              )}
+            </TouchableOpacity>
+
+            <Text style={styles.signupText}>
+              لديك حساب بالفعل؟
+              <TouchableNativeFeedback onPress={() => navigation.navigate('Login')}>
+                <Text style={styles.signupLink}>تسجيل الدخول</Text>
+              </TouchableNativeFeedback>
+            </Text>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

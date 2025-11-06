@@ -11,7 +11,6 @@ import {
   TouchableOpacity,
   ScrollView,
   FlatList,
-  SafeAreaView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -24,9 +23,9 @@ const screenHeigh = Dimensions.get('window').height;
 
 const MyStatusBar = ({ backgroundColor }: any) => (
   <View style={[styles.statusBar, { backgroundColor }]}>
-    <SafeAreaView>
+    <View>
       <StatusBar translucent backgroundColor={backgroundColor} barStyle="light-content" />
-    </SafeAreaView>
+    </View>
   </View>
 );
 

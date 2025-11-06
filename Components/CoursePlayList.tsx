@@ -109,30 +109,34 @@ export default function CoursePlayList() {
               <TouchableWithoutFeedback onPress={() => showVideo(data.video)}>
                 <Ionicons name="play" size={25} color="blue" />
               </TouchableWithoutFeedback>
-              <TouchableWithoutFeedback onPress={() => downloadPDF(data.pdf)}>
-                <View style={styles.downloadContainer}>
-                  {isDownloading ? (
-                    <View style={styles.downloadProgress}>
-                      <ActivityIndicator size="small" color="red" />
-                      <Text style={styles.progressText}>{progress}%</Text>
-                    </View>
-                  ) : (
-                    <MaterialCommunityIcons
-                      name="file-document"
-                      size={25}
-                      color="red"
-                      style={{ marginHorizontal: 10 }}
-                    />
-                  )}
-                </View>
-              </TouchableWithoutFeedback>
+              {data.pdf ? (
+                <TouchableWithoutFeedback onPress={() => downloadPDF(data.pdf)}>
+                  <View style={styles.downloadContainer}>
+                    {isDownloading ? (
+                      <View style={styles.downloadProgress}>
+                        <ActivityIndicator size="small" color="red" />
+                        <Text style={styles.progressText}>{progress}%</Text>
+                      </View>
+                    ) : (
+                      <MaterialCommunityIcons
+                        name="file-document"
+                        size={25}
+                        color="red"
+                        style={{ marginHorizontal: 10 }}
+                      />
+                    )}
+                  </View>
+                </TouchableWithoutFeedback>
+              ) : (
+                <></>
+              )}
             </>
           ) : (
             <Ionicons name="ban" size={25} color="blue" />
           )}
         </View>
         <View style={{ flexDirection: 'row' }}>
-          <Text style={{ fontSize: 20 }}>{data.name}</Text>
+          <Text style={{ fontSize: 20 }}>{data.name.slice(0, 20)}</Text>
           <Text style={styles.itemIndex}>{index + 1}</Text>
         </View>
       </View>

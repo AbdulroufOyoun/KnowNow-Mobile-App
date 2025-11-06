@@ -1,6 +1,5 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import {
-  SafeAreaView,
   Text,
   View,
   Platform,
@@ -25,9 +24,9 @@ const screenHeigh = Dimensions.get('window').height;
 
 const MyStatusBar = ({ backgroundColor }: any) => (
   <View style={[styles.statusBar, { backgroundColor }]}>
-    <SafeAreaView>
+    <View>
       <StatusBar translucent backgroundColor={backgroundColor} barStyle="light-content" />
-    </SafeAreaView>
+    </View>
   </View>
 );
 

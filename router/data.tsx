@@ -1,6 +1,7 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-const url = 'http://192.168.1.5:8888/api/';
+// const url = 'http://10.154.21.234:8888/api/';
+const url = 'http://192.168.1.13:8888/api/';
 
 export async function getUserData(): Promise<string | null> {
   try {
@@ -80,6 +81,9 @@ export function showCourses(token: any, page = 1) {
       page: page,
     },
   });
+}
+export function showAds() {
+  return axios.get(url + 'show_ads');
 }
 export function showMyCourses(token: any) {
   return axios.get(url + 'show_user_courses', {

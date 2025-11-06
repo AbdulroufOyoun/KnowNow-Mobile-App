@@ -25,7 +25,20 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true,
+          // OR the more secure option below:
+          "NSExceptionDomains": {
+            "10.154.21.234": {
+              "NSExceptionAllowsInsecureHTTPLoads": true
+            }
+          }
+        }
+      }
+      
+
     },
     "android": {
       "adaptiveIcon": {

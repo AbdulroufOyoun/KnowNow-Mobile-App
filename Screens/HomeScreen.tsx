@@ -1,10 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Notifications from 'expo-notifications';
+// import * as Notifications from 'expo-notifications';
 import { useEffect, useState } from 'react';
 import {
-  Alert,
   FlatList,
-  Platform,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -31,47 +29,47 @@ export default function HomeScreen() {
   const navigation = useNavigation<any>();
   const [universities, setUniversities] = useState<any>([]);
 
-  const requestUserPermission = async () => {
-    const { status: existingStatus } = await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
-    if (existingStatus !== 'granted') {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    }
-    return finalStatus === 'granted';
-  };
+  // const requestUserPermission = async () => {
+  //   const { status: existingStatus } = await Notifications.getPermissionsAsync();
+  //   let finalStatus = existingStatus;
+  //   if (existingStatus !== 'granted') {
+  //     const { status } = await Notifications.requestPermissionsAsync();
+  //     finalStatus = status;
+  //   }
+  //   return finalStatus === 'granted';
+  // };
 
-  const setupNotifications = async () => {
-    try {
-      const savedToken = await AsyncStorage.getItem('fcm_token');
-      console.log(savedToken);
-      if (!savedToken) {
-        const permissionGranted = await requestUserPermission();
-        if (!permissionGranted) return;
+  // const setupNotifications = async () => {
+  //   try {
+  //     const savedToken = await AsyncStorage.getItem('fcm_token');
+  //     console.log(savedToken);
+  //     if (!savedToken) {
+  //       const permissionGranted = await requestUserPermission();
+  //       if (!permissionGranted) return;
 
-        if (Platform.OS === 'android') {
-          await Notifications.setNotificationChannelAsync('default', {
-            name: 'default',
-            importance: Notifications.AndroidImportance.HIGH,
-            vibrationPattern: [0, 250, 250, 250],
-            lightColor: '#FF231F7C',
-          });
-        }
-        const devicePushToken = await Notifications.getDevicePushTokenAsync();
-        const fcmToken = devicePushToken.data;
-        await AsyncStorage.setItem('fcm_token', fcmToken);
-        updateFcmToken(token, fcmToken);
-        Notifications.addNotificationReceivedListener((notification) => {
-          Alert.alert('📩 إشعار جديد', notification.request.content.body || 'وصل إشعار جديد');
-        });
-        Notifications.addNotificationResponseReceivedListener((response) => {
-          console.log('Notification tapped:', response);
-        });
-      }
-    } catch (error) {
-      console.error('Notification setup error:', error);
-    }
-  };
+  //       if (Platform.OS === 'android') {
+  //         await Notifications.setNotificationChannelAsync('default', {
+  //           name: 'default',
+  //           importance: Notifications.AndroidImportance.HIGH,
+  //           vibrationPattern: [0, 250, 250, 250],
+  //           lightColor: '#FF231F7C',
+  //         });
+  //       }
+  //       const devicePushToken = await Notifications.getDevicePushTokenAsync();
+  //       const fcmToken = devicePushToken.data;
+  //       await AsyncStorage.setItem('fcm_token', fcmToken);
+  //       updateFcmToken(token, fcmToken);
+  //       Notifications.addNotificationReceivedListener((notification) => {
+  //         Alert.alert('📩 إشعار جديد', notification.request.content.body || 'وصل إشعار جديد');
+  //       });
+  //       Notifications.addNotificationResponseReceivedListener((response) => {
+  //         console.log('Notification tapped:', response);
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error('Notification setup error:', error);
+  //   }
+  // };
   useEffect(() => {
     if (!token) {
       getUserData();
@@ -79,7 +77,7 @@ export default function HomeScreen() {
     if (token) {
       getUniversities();
       getCollections();
-      setupNotifications();
+      // setupNotifications();
     }
   }, [token]);
   const getUserData = async () => {

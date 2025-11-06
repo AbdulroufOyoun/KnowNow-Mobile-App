@@ -12,7 +12,7 @@ export default function SubscribeComponent({ updateSubscriptionStatus, route }: 
   const [subscribed, setSubscribed] = useState(contain.is_subscribed);
 
   const subscribeCourse = () => {
-    if (code.length === 6) {
+    if (code.length === 8) {
       subscribe({ collection_code: null, course_code: code, item_id: courseId }, token)
         .then((_response: any) => {
           setSubscribed(true);

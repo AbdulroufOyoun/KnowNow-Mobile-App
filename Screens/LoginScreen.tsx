@@ -12,11 +12,14 @@ import {
   TouchableNativeFeedback,
   TouchableOpacity,
   View,
+  TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform,
 } from 'react-native';
 import { Login } from '../router/data';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Device from 'expo-device';
-
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -72,40 +75,53 @@ export default function LoginScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar translucent barStyle="dark-content" />
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+          <View style={styles.container}>
+            <StatusBar translucent barStyle="dark-content" />
 
-      <Text style={styles.title}> تعلم بأسلوبك، في وقتك، من أي مكان.</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="البريد الالكتروني"
-        keyboardType="email-address"
-        placeholderTextColor="#aaa"
-        value={email}
-        onChangeText={(text) => setEmail(text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="كلمة المرور"
-        secureTextEntry
-        placeholderTextColor="#aaa"
-        value={password}
-        onChangeText={(text) => setPassword(text)}
-      />
-      <TouchableOpacity style={styles.button} onPress={() => handleLogin()} disabled={loading}>
-        {loading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={[styles.buttonText, loading && styles.buttonDisabled]}>تسجيل الدخول</Text>
-        )}
-      </TouchableOpacity>
-      <Text style={styles.signupText}>
-        ليس لديك حساب؟
-        <TouchableNativeFeedback onPress={() => navigation.navigate('SingUp')}>
-          <Text style={styles.signupLink}>انشاء حساب</Text>
-        </TouchableNativeFeedback>
-      </Text>
-    </View>
+            <Text style={styles.title}> تعلم بأسلوبك، في وقتك، من أي مكان</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="البريد الالكتروني"
+              keyboardType="email-address"
+              placeholderTextColor="#aaa"
+              value={email}
+              onChangeText={(text) => setEmail(text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="كلمة المرور"
+              secureTextEntry
+              placeholderTextColor="#aaa"
+              value={password}
+              onChangeText={(text) => setPassword(text)}
+            />
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => handleLogin()}
+              disabled={loading}>
+              {loading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={[styles.buttonText, loading && styles.buttonDisabled]}>
+                  تسجيل الدخول
+                </Text>
+              )}
+            </TouchableOpacity>
+            <Text style={styles.signupText}>
+              ليس لديك حساب؟
+              <TouchableNativeFeedback onPress={() => navigation.navigate('SingUp')}>
+                <Text style={styles.signupLink}>انشاء حساب</Text>
+              </TouchableNativeFeedback>
+            </Text>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -124,7 +140,8 @@ const styles = StyleSheet.create({
     color: '#2C3E50',
     marginBottom: 24,
     lineHeight: 45,
-    letterSpacing: 1,
+    // letterSpacing: 1,
+    writingDirection: 'rtl',
   },
 
   input: {

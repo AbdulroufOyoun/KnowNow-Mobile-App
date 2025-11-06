@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, TouchableOpacity, Text, StyleSheet, View } from 'react-native';
+import { Alert, TouchableOpacity, Text, StyleSheet, View, Platform } from 'react-native';
 import {
   createDrawerNavigator,
   DrawerContentScrollView,
@@ -97,6 +97,11 @@ export default function MainNavigator() {
         drawerContent={(props: any) => <CustomDrawerContent {...props} />}
         screenOptions={({ navigation }: any) => ({
           drawerLabelStyle: { fontSize: 17 },
+          headerStyle: {
+            height: Platform.OS === 'ios' ? 120 : undefined,
+            backgroundColor: '#fff', // optional
+          },
+
           headerRight: () => (
             <TouchableOpacity
               style={styles.iconButton}
@@ -106,11 +111,11 @@ export default function MainNavigator() {
           ),
         })}>
         <Drawer.Screen name="Home" component={HomeScreen} options={{ title: 'الصفحة الرئيسية' }} />
-        <Drawer.Screen
+        {/* <Drawer.Screen
           name="MyCourses"
           component={MyCoursesNavigation}
           options={{ title: 'دوراتي' }}
-        />
+        /> */}
         <Drawer.Screen
           name="ChangePassword"
           component={ChangePasswordScreen}
@@ -137,7 +142,7 @@ export default function MainNavigator() {
       <Stack.Screen name="CoursePlayList" component={CourseNavigator} />
       <Stack.Screen name="AllCollections" component={AllCollectionsScreen} />
       <Stack.Screen name="Collection" component={CollectionNavigator} />
-      <Stack.Screen name="Pdf" component={ShowPdfScreen} />
+      {/* <Stack.Screen name="Pdf" component={ShowPdfScreen} /> */}
       <Stack.Screen name="Video" component={ShowCourseVideo} />
       <Stack.Screen name="Years" component={UniversityNavigator} />
     </Stack.Navigator>

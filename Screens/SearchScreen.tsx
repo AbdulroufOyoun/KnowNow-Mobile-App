@@ -1,15 +1,20 @@
 import { useNavigation } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import {
   FlatList,
   Image,
+  Keyboard,
+  Platform,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
 // import { findMovies } from '../data';
@@ -48,48 +53,52 @@ export default function SearchScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      {/* <StatusBar style="dark" /> */}
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <SafeAreaView style={styles.safeArea}>
+        {/* <StatusBar style="dark" /> */}
 
-      <View style={styles.searchContainer}>
-        <TextInput
-          placeholder="Search Course"
-          // placeholderTextColor="lightgray"
-          onChangeText={(text) => searchCourses(text)}
-          style={styles.textInput}
-        />
-        <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.closeButton}>
-          <Ionicons name="close" size={25} color="white" />
-        </TouchableOpacity>
-      </View>
+        <View style={styles.searchContainer}>
+          <TextInput
+            placeholder="Search Course"
+            // placeholderTextColor="lightgray"
+            onChangeText={(text) => searchCourses(text)}
+            style={styles.textInput}
+          />
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Drawer')}
+            style={styles.closeButton}>
+            <Ionicons name="close" size={25} color="white" />
+          </TouchableOpacity>
+        </View>
 
-      {loading ? (
-        <Loading />
-      ) : results.length > 0 ? (
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.scrollContainer}>
-          <Text style={styles.resultsText}>Results ( {results.length} )</Text>
-          <View>
-            <FlatList
-              data={results}
-              renderItem={({ item }) => <CourseCard data={item} />}
-              keyExtractor={(item: any) => item.id}
-              showsHorizontalScrollIndicator={false}
-              scrollEnabled={false}
-              ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+        {loading ? (
+          <Loading />
+        ) : results.length > 0 ? (
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContainer}>
+            <Text style={styles.resultsText}>Results ( {results.length} )</Text>
+            <View>
+              <FlatList
+                data={results}
+                renderItem={({ item }) => <CourseCard data={item} />}
+                keyExtractor={(item: any) => item.id}
+                showsHorizontalScrollIndicator={false}
+                scrollEnabled={false}
+                ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+              />
+            </View>
+          </ScrollView>
+        ) : (
+          <View style={styles.emptyContainer}>
+            <Image
+              source={require('../assets/images/family-enjoying-picnic.png')}
+              style={styles.emptyImage}
             />
           </View>
-        </ScrollView>
-      ) : (
-        <View style={styles.emptyContainer}>
-          <Image
-            source={require('../assets/images/family-enjoying-picnic.png')}
-            style={styles.emptyImage}
-          />
-        </View>
-      )}
-    </SafeAreaView>
+        )}
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -97,7 +106,9 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     // backgroundColor: '#dbdbdb', // Neutral-800 equivalent
-    paddingTop: 16,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+
+    // paddingTop: 16,
   },
   searchContainer: {
     marginHorizontal: 16,

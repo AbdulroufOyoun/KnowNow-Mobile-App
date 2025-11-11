@@ -57,7 +57,7 @@ export default function ShowCourseVideo({ route }: any) {
             <VideoView
               style={styles.video}
               player={player}
-              fullscreenOptions={{ enabled: true }}
+              fullscreenOptions={{ enable: true }}
               allowsPictureInPicture
             />
           </View>

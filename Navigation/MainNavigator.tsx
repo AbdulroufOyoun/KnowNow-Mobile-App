@@ -65,18 +65,19 @@ export default function MainNavigator() {
 
   const LogoutButton = () => {
     const handleLogout = () => {
-      Alert.alert(
-        'تسجيل الخروج', // Title
-        'هل أنت متأكد أنك تريد تسجيل الخروج؟', // Message
-        [
-          { text: 'إلغاء', style: 'cancel' }, // Cancel button
-          { text: 'تسجيل الخروج', onPress: () => LogoutUser() }, // Logout action
-        ]
-      );
+      Alert.alert('تسجيل الخروج', 'هل أنت متأكد أنك تريد تسجيل الخروج؟', [
+        { text: 'إلغاء', style: 'cancel' },
+        {
+          text: 'تسجيل الخروج',
+          style: 'destructive',
+          onPress: () => LogoutUser(),
+        },
+      ]);
     };
 
     return (
       <TouchableOpacity style={styles.logoutButton} onPress={() => handleLogout()}>
+        <Feather name="log-out" size={20} color="#FF6B6B" style={styles.logoutIcon} />
         <Text style={styles.logoutText}>تسجيل الخروج</Text>
       </TouchableOpacity>
     );
@@ -84,10 +85,15 @@ export default function MainNavigator() {
 
   const CustomDrawerContent = (props: any) => {
     return (
-      <DrawerContentScrollView {...props}>
+      <DrawerContentScrollView {...props} style={styles.drawerContent}>
+        <View style={styles.drawerHeader}>
+          <Text style={styles.drawerTitle}>تعلم الآن</Text>
+          <Text style={styles.drawerSubtitle}>منصة التعليم الذكية</Text>
+        </View>
         <DrawerItemList {...props} />
-
-        <LogoutButton />
+        <View style={styles.drawerFooter}>
+          <LogoutButton />
+        </View>
       </DrawerContentScrollView>
     );
   };
@@ -96,36 +102,93 @@ export default function MainNavigator() {
       <Drawer.Navigator
         drawerContent={(props: any) => <CustomDrawerContent {...props} />}
         screenOptions={({ navigation }: any) => ({
-          drawerLabelStyle: { fontSize: 17 },
+          drawerLabelStyle: {
+            fontSize: 16,
+            fontWeight: '500',
+            color: '#035AA6',
+            marginLeft: -20,
+            marginRight: 8,
+          },
+          drawerActiveTintColor: '#035AA6',
+          drawerInactiveTintColor: '#8593A6',
+          drawerActiveBackgroundColor: '#ACCAF2',
+          drawerItemStyle: {
+            borderRadius: 12,
+            marginHorizontal: 8,
+            marginVertical: 4,
+          },
           headerStyle: {
             height: Platform.OS === 'ios' ? 120 : undefined,
-            backgroundColor: '#fff', // optional
+            backgroundColor: '#F5F7FA',
+            elevation: 2,
+            shadowColor: '#035AA6',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 4,
           },
-
+          headerTintColor: '#035AA6',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 20,
+            color: '#035AA6',
+          },
           headerRight: () => (
             <TouchableOpacity
               style={styles.iconButton}
               onPress={() => navigation.navigate('Search')}>
-              <Feather name="search" size={30} color="gray" />
+              <Feather name="search" size={24} color="#035AA6" />
             </TouchableOpacity>
           ),
         })}>
-        <Drawer.Screen name="Home" component={HomeScreen} options={{ title: 'الصفحة الرئيسية' }} />
+        <Drawer.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{
+            title: 'الصفحة الرئيسية',
+            drawerIcon: ({ color, size }: any) => (
+              <Feather name="home" style={{ marginRight: 20 }} size={size} color={color} />
+            ),
+          }}
+        />
         <Drawer.Screen
           name="MyCourses"
           component={MyCoursesNavigation}
-          options={{ title: 'دوراتي' }}
+          options={{
+            title: 'دوراتي',
+            drawerIcon: ({ color, size }: any) => (
+              <Feather name="book" style={{ marginRight: 20 }} size={size} color={color} />
+            ),
+          }}
         />
         <Drawer.Screen
           name="ChangePassword"
           component={ChangePasswordScreen}
-          options={{ title: 'تغيير كلمة المرور' }}
+          options={{
+            title: 'تغيير كلمة المرور',
+            drawerIcon: ({ color, size }: any) => (
+              <Feather name="lock" style={{ marginRight: 20 }} size={size} color={color} />
+            ),
+          }}
         />
-        <Drawer.Screen name="About Us" component={AboutUsScreen} options={{ title: 'نبذة عنا' }} />
+        <Drawer.Screen
+          name="About Us"
+          component={AboutUsScreen}
+          options={{
+            title: 'نبذة عنا',
+            drawerIcon: ({ color, size }: any) => (
+              <Feather style={{ marginRight: 20 }} name="info" size={size} color={color} />
+            ),
+          }}
+        />
         <Drawer.Screen
           name="Privacy"
           component={PrivacyScreen}
-          options={{ title: 'سياسة الخصوصية' }}
+          options={{
+            title: 'سياسة الخصوصية',
+            drawerIcon: ({ color, size }: any) => (
+              <Feather name="shield" style={{ marginRight: 20 }} size={size} color={color} />
+            ),
+          }}
         />
       </Drawer.Navigator>
     );
@@ -150,31 +213,87 @@ export default function MainNavigator() {
 }
 
 const styles = StyleSheet.create({
+  drawerContent: {
+    backgroundColor: '#F5F7FA',
+    flex: 1,
+  },
+  drawerHeader: {
+    backgroundColor: '#035AA6',
+    paddingTop: Platform.OS === 'ios' ? 60 : 40,
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+    marginBottom: 10,
+  },
+  drawerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 4,
+    textAlign: 'right',
+  },
+  drawerSubtitle: {
+    fontSize: 14,
+    color: '#ACCAF2',
+    textAlign: 'right',
+  },
+  drawerFooter: {
+    borderTopWidth: 1,
+    borderTopColor: '#E0E0E0',
+    paddingTop: 10,
+    marginTop: 'auto',
+    marginBottom: Platform.OS === 'ios' ? 20 : 10,
+  },
   button: {
     marginRight: 10,
     padding: 10,
-    backgroundColor: '#0066cc',
-    borderRadius: 5,
+    backgroundColor: '#3F83BF',
+    borderRadius: 8,
   },
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
   },
   logoutButton: {
-    paddingVertical: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
     paddingHorizontal: 20,
-    borderRadius: 5,
-    marginTop: 20,
+    borderRadius: 12,
+    marginHorizontal: 16,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1.5,
+    borderColor: '#FF6B6B',
+    shadowColor: '#FF6B6B',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  logoutIcon: {
+    marginLeft: 8,
   },
   logoutText: {
-    color: 'red',
+    color: '#FF6B6B',
     fontWeight: 'bold',
     fontSize: 16,
     textAlign: 'center',
   },
   iconButton: {
     marginRight: 15,
-    padding: 10,
-    borderRadius: 50,
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: '#FFFFFF',
+    shadowColor: '#035AA6',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
 });

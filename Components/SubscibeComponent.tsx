@@ -26,48 +26,50 @@ export default function SubscribeComponent({ updateSubscriptionStatus, route }: 
     }
   };
   return (
-    <View style={{ flex: 1, marginTop: 20 }}>
+    <View style={styles.container}>
       <>
         {!subscribed ? (
-          <View style={{ marginTop: 30 }}>
-            <Text
-              style={{ textAlign: 'right', marginHorizontal: 30, fontSize: 20, marginBottom: 10 }}>
-              أدخل كود الأشتراك
-            </Text>
-            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-              <TouchableOpacity style={styles.button} onPress={subscribeCourse}>
+          <View style={styles.subscribeContainer}>
+            <Text style={styles.title}>أدخل كود الأشتراك</Text>
+            <View style={styles.inputContainer}>
+              <TouchableOpacity
+                style={[styles.button, code.length !== 8 && styles.buttonDisabled]}
+                onPress={subscribeCourse}
+                disabled={code.length !== 8}
+                activeOpacity={0.8}>
                 <Text style={styles.buttonText}>تأكيد</Text>
               </TouchableOpacity>
               <TextInput
                 style={styles.input}
                 placeholder="كود التفعيل"
-                placeholderTextColor="#aaa"
+                placeholderTextColor="#8593A6"
                 value={code}
-                onChangeText={(text) => setCode(text)}
+                onChangeText={(text) => {
+                  setCode(text);
+                  setError(false);
+                }}
+                maxLength={8}
               />
             </View>
-            <>
-              <View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 20 }}>
-                <Text style={{ fontSize: 15, padding: 15, textAlign: 'right', color: 'red' }}>
-                  (الكورس يُقدَّم لمرة واحدة فقط، وفي حال عدم اجتيازه، يتطلب التسجيل من جديد بالرسوم
-                  كاملة )
-                </Text>
+            <View style={styles.warningContainer}>
+              <Text style={styles.warningText}>
+                (الكورس يُقدَّم لمرة واحدة فقط، وفي حال عدم اجتيازه، يتطلب التسجيل من جديد بالرسوم
+                كاملة )
+              </Text>
+            </View>
+            {error && (
+              <View style={styles.errorContainer}>
+                <Text style={styles.errorText}>كود التفعيل خطأ</Text>
               </View>
-              {error ? (
-                <View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 20 }}>
-                  <Text style={{ fontSize: 20, color: 'red' }}>كود التفعيل خطأ</Text>
-                </View>
-              ) : (
-                <View></View>
-              )}
-            </>
+            )}
           </View>
         ) : (
-          <View style={{ flex: 1, justifyContent: 'center', alignContent: 'center' }}>
-            <Text style={{ textAlign: 'center', fontSize: 25 }}>أنت مشترك بالفعل</Text>
-            <View style={{ alignItems: 'center', marginTop: 10 }}>
-              <Ionicons name="shield-checkmark" size={100} color="green" />
+          <View style={styles.subscribedContainer}>
+            <View style={styles.iconContainer}>
+              <Ionicons name="shield-checkmark" size={80} color="#035AA6" />
             </View>
+            <Text style={styles.subscribedText}>أنت مشترك بالفعل</Text>
+            <Text style={styles.subscribedSubtext}>يمكنك الآن الوصول إلى جميع محتويات الدورة</Text>
           </View>
         )}
       </>
@@ -76,52 +78,117 @@ export default function SubscribeComponent({ updateSubscriptionStatus, route }: 
 }
 
 const styles = StyleSheet.create({
-  cardContainer: {
+  container: {
     flex: 1,
-    backgroundColor: '#ddd',
-    height: 50,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: '5%',
-    alignItems: 'center',
-    marginHorizontal: '2%',
-    borderRadius: 20,
-    shadowColor: 'blue',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    backgroundColor: '#F5F7FA',
+    paddingTop: 20,
   },
-  itemIndex: {
-    fontSize: 20,
-    backgroundColor: 'red',
-    borderRadius: 100,
-    marginLeft: 10,
-    color: 'white',
+  subscribeContainer: {
+    marginHorizontal: 16,
+    marginTop: 20,
+  },
+  title: {
+    textAlign: 'right',
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#035AA6',
+    marginBottom: 20,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 20,
   },
   input: {
-    width: '60%',
-    height: 50,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderTopRightRadius: 8, // Top-right corner
-    borderBottomRightRadius: 8, // Bottom-right corner
-
-    backgroundColor: '#fff',
+    flex: 1,
+    height: 56,
+    borderWidth: 2,
+    borderColor: '#ACCAF2',
+    borderTopRightRadius: 16,
+    borderBottomRightRadius: 16,
+    backgroundColor: '#FFFFFF',
     paddingHorizontal: 20,
+    fontSize: 16,
+    color: '#035AA6',
+    textAlign: 'right',
   },
   button: {
-    width: '20%',
-    height: 50,
-    backgroundColor: '#0066cc',
-    borderTopLeftRadius: 8, // Top-Left corner
-    borderBottomLeftRadius: 8, // Bottom-right corner
+    width: 120,
+    height: 56,
+    backgroundColor: '#035AA6',
+    borderTopLeftRadius: 16,
+    borderBottomLeftRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
   },
+  buttonDisabled: {
+    backgroundColor: '#8593A6',
+  },
   buttonText: {
-    color: '#fff',
+    color: '#ffffff',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  warningContainer: {
+    backgroundColor: '#FFFFFF',
+    padding: 16,
+    borderRadius: 12,
+    marginTop: 20,
+    borderLeftWidth: 3,
+    borderLeftColor: '#457ABF',
+    shadowColor: '#035AA6',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  warningText: {
+    fontSize: 14,
+    textAlign: 'right',
+    color: '#8593A6',
+    lineHeight: 22,
+  },
+  errorContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 16,
+    backgroundColor: '#FFFFFF',
+    padding: 12,
+    borderRadius: 12,
+    borderLeftWidth: 3,
+    borderLeftColor: '#FF6B6B',
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#FF6B6B',
+    fontWeight: '600',
+  },
+  subscribedContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  iconContainer: {
+    marginBottom: 20,
+    backgroundColor: '#ACCAF2',
+    borderRadius: 60,
+    padding: 20,
+  },
+  subscribedText: {
+    textAlign: 'center',
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#035AA6',
+    marginBottom: 12,
+  },
+  subscribedSubtext: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#8593A6',
+    lineHeight: 24,
   },
 });

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-// const url = 'http://10.154.21.234:8888/api/';
-const url = 'http://192.168.1.5:8888/api/';
+// const url = 'http://192.168.1.104:8888/api/';
+const url = 'https://learnnowsyria.com/api/';
 
 export async function getUserData(): Promise<string | null> {
   try {
@@ -38,6 +38,11 @@ export function changePassword(data: any, token: any) {
     },
   });
 }
+// Media
+export function showMedia() {
+  return axios.get(url + 'show_media');
+}
+
 // Collections
 export function showCollections(token: any, page = 1, perPage = 3) {
   return axios.get(url + 'show_collections', {

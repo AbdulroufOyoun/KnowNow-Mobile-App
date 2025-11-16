@@ -22,54 +22,88 @@ export default function AboutCourseScreen() {
 
   const ItemCard = ({ data, index }: any) => {
     return (
-      <View>
-        <Text
-          style={{
-            textAlign: 'right',
-            fontWeight: 'bold',
-            fontSize: 30,
-            marginRight: 20,
-            marginTop: 30,
-          }}>
-          {data.title} :
-        </Text>
+      <View style={styles.cardContainer}>
+        <Text style={styles.title}>{data.title} :</Text>
         {data.descriptions.map((item: any, idx: any) => (
           <View key={idx} style={styles.listItem}>
             <Text style={styles.text}>{item.description || item}</Text>
-            <Text style={styles.bulletPoint}>•</Text>
+            <View style={styles.bulletContainer}>
+              <Text style={styles.bulletPoint}>•</Text>
+            </View>
           </View>
         ))}
       </View>
     );
   };
   return (
-    <ScrollView style={{ flex: 1 }}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
       <FlatList
         data={data}
         renderItem={({ item }: any) => <ItemCard data={item} />}
         keyExtractor={(item) => item.id}
         scrollEnabled={false}
-        ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F5F7FA',
+  },
+  scrollContent: {
+    paddingBottom: 30,
+  },
+  cardContainer: {
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 16,
+    marginTop: 16,
+    padding: 20,
+    borderRadius: 16,
+    shadowColor: '#035AA6',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    borderLeftWidth: 4,
+    borderLeftColor: '#3F83BF',
+  },
+  title: {
+    textAlign: 'right',
+    fontWeight: 'bold',
+    fontSize: 22,
+    color: '#035AA6',
+    marginBottom: 16,
+  },
   listItem: {
     flexDirection: 'row',
-    alignItems: 'flex-end',
+    alignItems: 'flex-start',
     justifyContent: 'flex-end',
-    // marginVertical: 1,
+    marginBottom: 12,
+  },
+  bulletContainer: {
+    marginRight: 12,
+    marginTop: 2,
   },
   bulletPoint: {
-    fontSize: 30,
-    marginRight: 15, // Space between bullet and text
+    fontSize: 20,
+    color: '#3F83BF',
     textAlign: 'right',
   },
   text: {
-    fontSize: 20,
-    marginRight: 10,
+    fontSize: 16,
+    marginRight: 8,
     textAlign: 'right',
+    color: '#666',
+    flex: 1,
+    lineHeight: 24,
+  },
+  separator: {
+    height: 8,
   },
 });

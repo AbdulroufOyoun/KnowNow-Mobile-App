@@ -19,7 +19,6 @@ import {
 } from 'react-native';
 import { Login } from '../router/data';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Device from 'expo-device';
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -28,16 +27,58 @@ export default function LoginScreen() {
 
   const navigation = useNavigation<any>();
 
+  // Validation errors
+  const [errors, setErrors] = useState({
+    email: '',
+    password: '',
+  });
+
   useEffect(() => {
     getUserData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uid]);
-  const handleLogin = async () => {
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePassword = (password: string) => {
+    return password.length >= 8;
+  };
+
+  const validateForm = () => {
+    const newErrors = {
+      email: '',
+      password: '',
+    };
+
+    let isValid = true;
+
+    // Validate email
     if (!email.trim()) {
-      Alert.alert('Error', 'Email is required');
-      return;
+      newErrors.email = 'البريد الإلكتروني مطلوب';
+      isValid = false;
+    } else if (!validateEmail(email)) {
+      newErrors.email = 'البريد الإلكتروني غير صحيح';
+      isValid = false;
     }
+
+    // Validate password
     if (!password.trim()) {
-      Alert.alert('Error', 'Password is required');
+      newErrors.password = 'كلمة المرور مطلوبة';
+      isValid = false;
+    } else if (!validatePassword(password)) {
+      newErrors.password = 'كلمة المرور يجب أن تكون 8 أحرف على الأقل';
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  const handleLogin = async () => {
+    if (!validateForm()) {
       return;
     }
     setLoading(true);
@@ -55,23 +96,18 @@ export default function LoginScreen() {
       });
   };
 
-  const getDeviceId = async () => {
-    if (Device.osInternalBuildId) {
-      return Device.osInternalBuildId + Device.modelId; // Unique hardware identifier for Android devices
-    } else {
-      return Device.deviceName || 'Unknown Device';
-    }
-  };
   const getUserData = async () => {
     try {
       const userData = (await AsyncStorage.getItem('user')) ?? null;
       if (userData != null) {
         navigation.replace('MainNavigator');
       } else {
-        const id = await getDeviceId();
+        const id = await AsyncStorage.getItem('device_uuid');
         setUid(id);
       }
-    } catch (error) {}
+    } catch {
+      // Handle error silently
+    }
   };
 
   return (
@@ -84,22 +120,38 @@ export default function LoginScreen() {
             <StatusBar translucent barStyle="dark-content" />
 
             <Text style={styles.title}> تعلم بأسلوبك، في وقتك، من أي مكان</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="البريد الالكتروني"
-              keyboardType="email-address"
-              placeholderTextColor="#aaa"
-              value={email}
-              onChangeText={(text) => setEmail(text)}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="كلمة المرور"
-              secureTextEntry
-              placeholderTextColor="#aaa"
-              value={password}
-              onChangeText={(text) => setPassword(text)}
-            />
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={[styles.input, errors.email && styles.inputError]}
+                placeholder="البريد الالكتروني"
+                keyboardType="email-address"
+                placeholderTextColor="#aaa"
+                value={email}
+                onChangeText={(text) => {
+                  setEmail(text);
+                  if (errors.email) {
+                    setErrors({ ...errors, email: '' });
+                  }
+                }}
+              />
+              {errors.email ? <Text style={styles.errorText}>{errors.email}</Text> : null}
+            </View>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={[styles.input, errors.password && styles.inputError]}
+                placeholder="كلمة المرور"
+                secureTextEntry
+                placeholderTextColor="#aaa"
+                value={password}
+                onChangeText={(text) => {
+                  setPassword(text);
+                  if (errors.password) {
+                    setErrors({ ...errors, password: '' });
+                  }
+                }}
+              />
+              {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
+            </View>
             <TouchableOpacity
               style={styles.button}
               onPress={() => handleLogin()}
@@ -144,16 +196,31 @@ const styles = StyleSheet.create({
     writingDirection: 'rtl',
   },
 
-  input: {
+  inputContainer: {
     width: '90%',
+    marginBottom: 4,
+  },
+  input: {
+    width: '100%',
     color: 'black',
     height: 50,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 8,
     paddingHorizontal: 12,
-    marginBottom: 16,
     backgroundColor: '#fff',
+  },
+  inputError: {
+    borderColor: '#FF6B6B',
+    borderWidth: 1.5,
+  },
+  errorText: {
+    color: '#FF6B6B',
+    fontSize: 12,
+    marginTop: 4,
+    marginBottom: 8,
+    marginRight: 4,
+    textAlign: 'right',
   },
   button: {
     width: '90%',

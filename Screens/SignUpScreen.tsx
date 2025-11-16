@@ -1,15 +1,6 @@
-import { DefaultTheme, NavigationContainer, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import RNPickerSelect from 'react-native-picker-select';
-import * as Device from 'expo-device';
-import {
-  Appearance,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  TouchableWithoutFeedback,
-} from 'react-native';
-
 import {
   Alert,
   StyleSheet,
@@ -20,9 +11,13 @@ import {
   View,
   Keyboard,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { showUniversities, SignUp, updateFcmToken } from '../router/data';
+import { showUniversities, SignUp } from '../router/data';
 
 export default function SignUpScreen() {
   const [email, setEmail] = useState('');
@@ -35,7 +30,16 @@ export default function SignUpScreen() {
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation<any>();
   const [universities, setUniversities] = useState<any>([]);
-  // const isDarkMode = Appearance.getColorScheme() === 'dark';
+
+  // Validation errors
+  const [errors, setErrors] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    university: '',
+    password: '',
+    passwordConfirmation: '',
+  });
 
   useEffect(() => {
     (async () => {
@@ -46,16 +50,39 @@ export default function SignUpScreen() {
     })();
     (async () => {
       getUniversities();
-      const uid = await getDeviceId();
+      const uid = await getOrCreateUUID();
       setUid(uid);
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigation]);
 
-  const getDeviceId = async () => {
-    if (Device.osInternalBuildId) {
-      return Device.osInternalBuildId; // Unique hardware identifier for Android devices
-    } else {
-      return Device.deviceName || 'Unknown Device';
+  const generateUUID = () => {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      const r = (Math.random() * 16) | 0;
+      const v = c === 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+  };
+
+  const getOrCreateUUID = async () => {
+    try {
+      const storedUUID = await AsyncStorage.getItem('device_uuid');
+      if (storedUUID) {
+        return storedUUID;
+      } else {
+        const newUUID = generateUUID();
+        await AsyncStorage.setItem('device_uuid', newUUID);
+        return newUUID;
+      }
+    } catch (error) {
+      console.error('Error getting/creating UUID:', error);
+      const newUUID = generateUUID();
+      try {
+        await AsyncStorage.setItem('device_uuid', newUUID);
+      } catch (e) {
+        console.error('Error saving UUID:', e);
+      }
+      return newUUID;
     }
   };
   const getUniversities = () => {
@@ -71,33 +98,94 @@ export default function SignUpScreen() {
         console.log(error.message);
       });
   };
-  const handleLogin = () => {
-    if (!email.trim()) {
-      Alert.alert('Error', 'Email is required');
-      return;
-    }
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePhone = (phone: string) => {
+    const phoneRegex = /^[0-9]{10,15}$/;
+    return phoneRegex.test(phone.replace(/\s/g, ''));
+  };
+
+  const validatePassword = (password: string) => {
+    return password.length >= 8;
+  };
+
+  const validateName = (name: string) => {
+    return name.trim().length >= 2;
+  };
+
+  const validateForm = () => {
+    const newErrors = {
+      name: '',
+      email: '',
+      phone: '',
+      university: '',
+      password: '',
+      passwordConfirmation: '',
+    };
+
+    let isValid = true;
+
+    // Validate name
     if (!name.trim()) {
-      Alert.alert('Error', 'Name is required');
-      return;
+      newErrors.name = 'الأسم مطلوب';
+      isValid = false;
+    } else if (!validateName(name)) {
+      newErrors.name = 'الأسم يجب أن يكون على الأقل حرفين';
+      isValid = false;
     }
+
+    // Validate email
+    if (!email.trim()) {
+      newErrors.email = 'البريد الإلكتروني مطلوب';
+      isValid = false;
+    } else if (!validateEmail(email)) {
+      newErrors.email = 'البريد الإلكتروني غير صحيح';
+      isValid = false;
+    }
+
+    // Validate phone
     if (!phone.trim()) {
-      Alert.alert('Error', 'Phone number is required');
-      return;
+      newErrors.phone = 'رقم الهاتف مطلوب';
+      isValid = false;
+    } else if (!validatePhone(phone)) {
+      newErrors.phone = 'رقم الهاتف يجب أن يكون بين 10 و 15 رقم';
+      isValid = false;
     }
+
+    // Validate university
     if (universityId === null) {
-      Alert.alert('Error', 'University ID is required');
-      return;
+      newErrors.university = 'يجب اختيار الجامعة';
+      isValid = false;
     }
+
+    // Validate password
     if (!password.trim()) {
-      Alert.alert('Error', 'Password is required');
-      return;
+      newErrors.password = 'كلمة المرور مطلوبة';
+      isValid = false;
+    } else if (!validatePassword(password)) {
+      newErrors.password = 'كلمة المرور يجب أن تكون 8 أحرف على الأقل';
+      isValid = false;
     }
+
+    // Validate password confirmation
     if (!passwordConfirmation.trim()) {
-      Alert.alert('Error', 'Password confirmation is required');
-      return;
+      newErrors.passwordConfirmation = 'تأكيد كلمة المرور مطلوب';
+      isValid = false;
+    } else if (password !== passwordConfirmation) {
+      newErrors.passwordConfirmation = 'كلمات المرور غير متطابقة';
+      isValid = false;
     }
-    if (password !== passwordConfirmation) {
-      Alert.alert('Error', 'Passwords do not match');
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  const handleLogin = () => {
+    if (!validateForm()) {
       return;
     }
     setLoading(true);
@@ -111,8 +199,17 @@ export default function SignUpScreen() {
       password_confirmation: passwordConfirmation,
       mobile_uuid: uid,
     })
-      .then((response) => {
-        AsyncStorage.setItem('user', JSON.stringify(response.data.data));
+      .then(async (response) => {
+        // Save user data
+        await AsyncStorage.setItem('user', JSON.stringify(response.data.data));
+        // Save UUID to device on successful signup
+        if (uid) {
+          try {
+            await AsyncStorage.setItem('device_uuid', uid);
+          } catch (error) {
+            console.error('Error saving UUID after signup:', error);
+          }
+        }
         setLoading(false);
         navigation.replace('MainNavigator');
       })
@@ -130,93 +227,142 @@ export default function SignUpScreen() {
         <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
           <View style={styles.container}>
             <Text style={styles.title}>مستخدم جديد</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="الأسم"
-              placeholderTextColor="#aaa"
-              value={name}
-              onChangeText={(text) => setName(text)}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="رقم الهاتف"
-              keyboardType="numeric"
-              placeholderTextColor="#aaa"
-              value={phone}
-              onChangeText={(text) => setPhone(text)}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="البريد الالكتروني"
-              keyboardType="email-address"
-              placeholderTextColor="#aaa"
-              value={email}
-              onChangeText={(text) => setEmail(text)}
-            />
-            <RNPickerSelect
-              style={{
-                inputIOS: {
-                  width: '90%',
-                  marginStart: '5%',
-                  height: 50,
-                  borderWidth: 1,
-                  borderColor: '#ccc',
-                  borderRadius: 8,
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={[styles.input, errors.name && styles.inputError]}
+                placeholder="الأسم"
+                placeholderTextColor="#aaa"
+                value={name}
+                onChangeText={(text) => {
+                  setName(text);
+                  if (errors.name) {
+                    setErrors({ ...errors, name: '' });
+                  }
+                }}
+              />
+              {errors.name ? <Text style={styles.errorText}>{errors.name}</Text> : null}
+            </View>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={[styles.input, errors.phone && styles.inputError]}
+                placeholder="رقم الهاتف"
+                keyboardType="numeric"
+                placeholderTextColor="#aaa"
+                value={phone}
+                onChangeText={(text) => {
+                  setPhone(text);
+                  if (errors.phone) {
+                    setErrors({ ...errors, phone: '' });
+                  }
+                }}
+              />
+              {errors.phone ? <Text style={styles.errorText}>{errors.phone}</Text> : null}
+            </View>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={[styles.input, errors.email && styles.inputError]}
+                placeholder="البريد الالكتروني"
+                keyboardType="email-address"
+                placeholderTextColor="#aaa"
+                value={email}
+                onChangeText={(text) => {
+                  setEmail(text);
+                  if (errors.email) {
+                    setErrors({ ...errors, email: '' });
+                  }
+                }}
+              />
+              {errors.email ? <Text style={styles.errorText}>{errors.email}</Text> : null}
+            </View>
+            <View style={styles.inputContainer}>
+              <RNPickerSelect
+                style={{
+                  inputIOS: {
+                    width: '90%',
+                    marginStart: '5%',
+                    height: 50,
+                    borderWidth: 1,
+                    borderColor: errors.university ? '#FF6B6B' : '#ccc',
+                    borderRadius: 8,
+                    textAlign: 'right',
+                    paddingHorizontal: 12,
+                    marginBottom: errors.university ? 4 : 16,
+                    writingDirection: 'rtl',
+                    backgroundColor: '#fff',
+                    color: 'black',
+                  },
+                  inputAndroid: {
+                    width: '100%',
+                    color: 'black',
+                    textAlign: 'right',
+                    // marginStart: '5%',
+                    height: 50,
+                    writingDirection: 'rtl',
+                    paddingHorizontal: 12,
+                    marginBottom: errors.university ? 4 : 16,
+                    backgroundColor: '#fff',
+                    borderWidth: 1,
+                    borderColor: errors.university ? '#FF6B6B' : '#ccc',
+                    borderRadius: 8,
+                  },
+                  inputIOSContainer: {
+                    zIndex: 100,
+                  },
+                }}
+                textInputProps={{
                   textAlign: 'right',
-                  paddingHorizontal: 12,
-                  marginBottom: 16,
-                  writingDirection: 'rtl',
-                  backgroundColor: '#fff',
-                  color: 'black',
-                },
-                inputAndroid: {
-                  width: '90%',
-                  color: 'black',
-                  textAlign: 'right',
-                  marginStart: '5%',
-                  height: 50,
-                  writingDirection: 'rtl',
-                  paddingHorizontal: 12,
-                  marginBottom: 16,
-                  backgroundColor: '#fff',
-                  borderWidth: 1,
-                  borderColor: '#ccc',
-                  borderRadius: 8,
-                },
-                inputIOSContainer: {
-                  zIndex: 100,
-                },
-              }}
-              textInputProps={{
-                textAlign: 'right',
-              }}
-              darkTheme={true}
-              // useNativeAndroidPickerStyle={false}
-              placeholder={{
-                label: 'الجامعة',
-                value: null,
-                color: '#aaa',
-              }}
-              onValueChange={(value: any) => setUniversityId(value)}
-              items={universities}
-            />
+                }}
+                darkTheme={true}
+                placeholder={{
+                  label: 'الجامعة',
+                  value: null,
+                  color: '#aaa',
+                }}
+                onValueChange={(value: any) => {
+                  setUniversityId(value);
+                  if (errors.university) {
+                    setErrors({ ...errors, university: '' });
+                  }
+                }}
+                items={universities}
+              />
+              {errors.university ? <Text style={styles.errorText}>{errors.university}</Text> : null}
+            </View>
 
-            <TextInput
-              style={styles.input}
-              placeholder="كلمة المرور"
-              secureTextEntry
-              placeholderTextColor="#aaa"
-              value={password}
-              onChangeText={(text) => setPassword(text)}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="تأكيد كلمة المرور"
-              secureTextEntry
-              placeholderTextColor="#aaa"
-              value={passwordConfirmation}
-              onChangeText={(text) => setPasswordConfirmation(text)}
-            />
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={[styles.input, errors.password && styles.inputError]}
+                placeholder="كلمة المرور"
+                secureTextEntry
+                placeholderTextColor="#aaa"
+                value={password}
+                onChangeText={(text) => {
+                  setPassword(text);
+                  if (errors.password) {
+                    setErrors({ ...errors, password: '' });
+                  }
+                }}
+              />
+              {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
+            </View>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={[styles.input, errors.passwordConfirmation && styles.inputError]}
+                placeholder="تأكيد كلمة المرور"
+                secureTextEntry
+                placeholderTextColor="#aaa"
+                value={passwordConfirmation}
+                onChangeText={(text) => {
+                  setPasswordConfirmation(text);
+                  if (errors.passwordConfirmation) {
+                    setErrors({ ...errors, passwordConfirmation: '' });
+                  }
+                }}
+              />
+              {errors.passwordConfirmation ? (
+                <Text style={styles.errorText}>{errors.passwordConfirmation}</Text>
+              ) : null}
+            </View>
             <TouchableOpacity
               style={[styles.button, loading && styles.buttonDisabled]}
               onPress={handleLogin}
@@ -254,16 +400,31 @@ const styles = StyleSheet.create({
     color: '#333',
     marginBottom: 24,
   },
-  input: {
+  inputContainer: {
     width: '90%',
+    marginBottom: 4,
+  },
+  input: {
+    width: '100%',
     color: 'black',
     height: 50,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 8,
     paddingHorizontal: 12,
-    marginBottom: 16,
     backgroundColor: '#fff',
+  },
+  inputError: {
+    borderColor: '#FF6B6B',
+    borderWidth: 1.5,
+  },
+  errorText: {
+    color: '#FF6B6B',
+    fontSize: 12,
+    marginTop: 4,
+    marginBottom: 8,
+    marginRight: 4,
+    textAlign: 'right',
   },
   button: {
     width: '90%',

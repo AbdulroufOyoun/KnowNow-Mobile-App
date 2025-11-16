@@ -76,66 +76,59 @@ export default function CourseNavigator() {
   };
 
   return (
-    <View style={{ flex: 1 }}>
-      <MyStatusBar backgroundColor="#474747" />
+    <View style={styles.container}>
+      <MyStatusBar backgroundColor="#035AA6" />
       <ImageBackground
         source={{ uri: item?.image || '' }} // safe guard
         style={styles.background}>
         <View style={styles.overlay}>
           <SafeAreaView style={styles.safeArea}>
-            <View>
-              <View style={styles.background}>
-                <TouchableWithoutFeedback
-                  onPress={() => navigation.goBack()}
-                  style={{ height: 60 }}>
-                  <View style={{ flexDirection: 'row', height: 60 }}>
-                    <Feather name="chevron-left" size={28} color="white" />
-                    <Text style={{ fontSize: 20, color: 'white' }}> رجوع </Text>
-                  </View>
-                </TouchableWithoutFeedback>
-
-                <View
-                  style={{
-                    flex: 1,
-                    justifyContent: 'space-between',
-                    marginTop: -70,
-                    paddingVertical: 30,
-                    alignContent: 'space-between',
-                  }}>
-                  <Text style={{ fontSize: 20, color: 'white', textAlign: 'right' }}>
-                    {item?.university || ''}
-                  </Text>
-                  <Text style={{ fontSize: 40, color: 'white', textAlign: 'right' }}>
-                    {item?.name || ''}
-                  </Text>
-                  <Text style={{ fontSize: 25, color: 'white', textAlign: 'right' }}>
-                    {item?.doctor}
-                  </Text>
+            <View style={styles.contentWrapper}>
+              <TouchableWithoutFeedback
+                onPress={() => navigation.goBack()}
+                style={styles.backButtonContainer}>
+                <View style={styles.backButton}>
+                  <Feather name="chevron-left" size={24} color="white" />
+                  <Text style={styles.backText}> رجوع </Text>
                 </View>
+              </TouchableWithoutFeedback>
+
+              <View style={styles.courseInfo}>
+                <Text style={styles.universityText}>{item?.university || ''}</Text>
+                <Text style={styles.courseName}>{item?.name || ''}</Text>
+                <Text style={styles.doctorText}>{item?.doctor}</Text>
               </View>
             </View>
           </SafeAreaView>
         </View>
       </ImageBackground>
-      <View style={{ flex: 1, height: 500, backgroundColor: 'red' }}>
+      <View style={styles.tabContainer}>
         {loading ? (
-          <View style={{ backgroundColor: 'white', flex: 1 }}>
+          <View style={styles.loadingContainer}>
             <Loading />
           </View>
         ) : (
           <Tab.Navigator
             initialRouteName="AboutCourse"
-            style={{ flex: 1, backgroundColor: 'green', height: '100%' }}
+            style={styles.tabNavigator}
             screenOptions={{
               tabBarLabelStyle: {
-                fontSize: 14,
-                // fontWeight: 'bold',
+                fontSize: 15,
+                fontWeight: '600',
                 textAlign: 'right',
                 writingDirection: 'rtl',
               },
-              tabBarIndicatorStyle: { backgroundColor: 'blue' },
-              tabBarActiveTintColor: 'red', // 👈 selected tab label color
-              tabBarInactiveTintColor: 'gray', // 👈 unselected tab label color
+              tabBarIndicatorStyle: { backgroundColor: '#3F83BF', height: 3 },
+              tabBarActiveTintColor: '#035AA6',
+              tabBarInactiveTintColor: '#8593A6',
+              tabBarStyle: {
+                backgroundColor: '#FFFFFF',
+                elevation: 2,
+                shadowColor: '#035AA6',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.1,
+                shadowRadius: 4,
+              },
             }}>
             <Tab.Screen
               name="Subscribe"
@@ -145,30 +138,34 @@ export default function CourseNavigator() {
             </Tab.Screen>
             {contain && (
               <>
-                {contain.practical && (
-                  <Tab.Screen
-                    name="CoursePlay"
-                    options={{ tabBarLabel: 'عملي' }}
-                    initialParams={{
-                      data: contain.practical,
-                      isSubscribed: contain?.is_subscribed,
-                      token: token,
-                    }}
-                    component={CoursePlayList}
-                  />
-                )}
-                {contain.theoretical && (
-                  <Tab.Screen
-                    name="CourseLicture"
-                    options={{ tabBarLabel: 'نظري' }}
-                    initialParams={{
-                      data: contain.theoretical,
-                      isSubscribed: contain?.is_subscribed || false,
-                      token: token,
-                    }}
-                    component={CoursePlayList}
-                  />
-                )}
+                {contain.practical &&
+                  Array.isArray(contain.practical) &&
+                  contain.practical.length > 0 && (
+                    <Tab.Screen
+                      name="CoursePlay"
+                      options={{ tabBarLabel: 'عملي' }}
+                      initialParams={{
+                        data: contain.practical,
+                        isSubscribed: contain?.is_subscribed,
+                        token: token,
+                      }}
+                      component={CoursePlayList}
+                    />
+                  )}
+                {contain.theoretical &&
+                  Array.isArray(contain.theoretical) &&
+                  contain.theoretical.length > 0 && (
+                    <Tab.Screen
+                      name="CourseLicture"
+                      options={{ tabBarLabel: 'نظري' }}
+                      initialParams={{
+                        data: contain.theoretical,
+                        isSubscribed: contain?.is_subscribed || false,
+                        token: token,
+                      }}
+                      component={CoursePlayList}
+                    />
+                  )}
               </>
             )}
             <Tab.Screen
@@ -196,14 +193,14 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
-    // backgroundColor: '#dbdbdb', // Neutral-800 equivalent
-    paddingTop: Platform.OS === 'android' ? 0 : 0,
-
-    // paddingTop: 16,
+  },
+  contentWrapper: {
+    flex: 1,
+    justifyContent: 'space-between',
   },
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)', // Adds a semi-transparent overlay
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     padding: 15,
     paddingTop: 0,
     width: '100%',
@@ -219,5 +216,63 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 24,
     fontWeight: 'bold',
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#F5F7FA',
+  },
+  backButtonContainer: {
+    height: 60,
+  },
+  backButton: {
+    flexDirection: 'row',
+    height: 60,
+    alignItems: 'center',
+    paddingLeft: 8,
+  },
+  backText: {
+    fontSize: 18,
+    color: 'white',
+    fontWeight: '600',
+  },
+  courseInfo: {
+    flex: 1,
+    justifyContent: 'space-between',
+    marginTop: -70,
+    paddingVertical: 30,
+    alignContent: 'space-between',
+  },
+  universityText: {
+    fontSize: 18,
+    color: '#ACCAF2',
+    textAlign: 'right',
+    fontWeight: '500',
+  },
+  courseName: {
+    fontSize: 32,
+    color: 'white',
+    textAlign: 'right',
+    fontWeight: 'bold',
+    lineHeight: 40,
+  },
+  doctorText: {
+    fontSize: 20,
+    color: 'white',
+    textAlign: 'right',
+    fontWeight: '500',
+  },
+  tabContainer: {
+    flex: 1,
+    backgroundColor: '#F5F7FA',
+  },
+  tabNavigator: {
+    flex: 1,
+    backgroundColor: '#F5F7FA',
+  },
+  loadingContainer: {
+    backgroundColor: '#F5F7FA',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

@@ -1,7 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-// import * as Notifications from 'expo-notifications';
+import * as Notifications from 'expo-notifications';
 import { useEffect, useState } from 'react';
 import {
+  Alert,
   FlatList,
   ScrollView,
   StatusBar,
@@ -9,6 +10,7 @@ import {
   Text,
   TouchableWithoutFeedback,
   View,
+  Platform,
 } from 'react-native';
 import AdsComponent from '../Components/AdsComponents';
 import { showCollections, showCourses, showUniversities, updateFcmToken } from '../router/data';
@@ -29,47 +31,89 @@ export default function HomeScreen() {
   const navigation = useNavigation<any>();
   const [universities, setUniversities] = useState<any>([]);
 
-  // const requestUserPermission = async () => {
-  //   const { status: existingStatus } = await Notifications.getPermissionsAsync();
-  //   let finalStatus = existingStatus;
-  //   if (existingStatus !== 'granted') {
-  //     const { status } = await Notifications.requestPermissionsAsync();
-  //     finalStatus = status;
-  //   }
-  //   return finalStatus === 'granted';
-  // };
+  const requestUserPermission = async () => {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    return finalStatus === 'granted';
+  };
 
-  // const setupNotifications = async () => {
-  //   try {
-  //     const savedToken = await AsyncStorage.getItem('fcm_token');
-  //     console.log(savedToken);
-  //     if (!savedToken) {
-  //       const permissionGranted = await requestUserPermission();
-  //       if (!permissionGranted) return;
+  const setupNotifications = async () => {
+    try {
+      const permissionGranted = await requestUserPermission();
+      if (!permissionGranted) {
+        console.log('Notification permission not granted');
+        return;
+      }
 
-  //       if (Platform.OS === 'android') {
-  //         await Notifications.setNotificationChannelAsync('default', {
-  //           name: 'default',
-  //           importance: Notifications.AndroidImportance.HIGH,
-  //           vibrationPattern: [0, 250, 250, 250],
-  //           lightColor: '#FF231F7C',
-  //         });
-  //       }
-  //       const devicePushToken = await Notifications.getDevicePushTokenAsync();
-  //       const fcmToken = devicePushToken.data;
-  //       await AsyncStorage.setItem('fcm_token', fcmToken);
-  //       updateFcmToken(token, fcmToken);
-  //       Notifications.addNotificationReceivedListener((notification) => {
-  //         Alert.alert('📩 إشعار جديد', notification.request.content.body || 'وصل إشعار جديد');
-  //       });
-  //       Notifications.addNotificationResponseReceivedListener((response) => {
-  //         console.log('Notification tapped:', response);
-  //       });
-  //     }
-  //   } catch (error) {
-  //     console.error('Notification setup error:', error);
-  //   }
-  // };
+      if (Platform.OS === 'android') {
+        await Notifications.setNotificationChannelAsync('default', {
+          name: 'default',
+          importance: Notifications.AndroidImportance.HIGH,
+          vibrationPattern: [0, 250, 250, 250],
+          lightColor: '#3F83BF',
+        });
+      }
+
+      const devicePushToken = await Notifications.getDevicePushTokenAsync();
+      console.log('Device Push Token (full object):', JSON.stringify(devicePushToken, null, 2));
+
+      let fcmToken: string;
+      if (typeof devicePushToken === 'string') {
+        fcmToken = devicePushToken;
+      } else if (devicePushToken && typeof devicePushToken === 'object') {
+        if (devicePushToken.data && typeof devicePushToken.data === 'string') {
+          fcmToken = devicePushToken.data;
+          if (fcmToken.startsWith('ExponentPushToken')) {
+            console.warn(
+              'Received Expo Push Token instead of FCM token. Backend needs to use Expo Push API.'
+            );
+          }
+        } else {
+          console.error('Invalid token structure - data is not a string:', devicePushToken);
+          return;
+        }
+      } else {
+        console.error('Invalid token structure:', devicePushToken);
+        return;
+      }
+
+      console.log('FCM Token extracted:', fcmToken);
+      console.log('Token length:', fcmToken.length);
+      console.log('Token starts with:', fcmToken.substring(0, 20));
+
+      if (!fcmToken || fcmToken.trim() === '') {
+        console.error('FCM token is empty');
+        return;
+      }
+
+      if (!token) {
+        console.error('User token is not available');
+        return;
+      }
+      const response = await updateFcmToken(token, fcmToken);
+      console.log('FCM Token update response:', response.data);
+
+      if (response.data) {
+        console.log('Token successfully sent to backend');
+      }
+
+      Notifications.addNotificationReceivedListener((notification) => {
+        Alert.alert('📩 إشعار جديد', notification.request.content.body || 'وصل إشعار جديد');
+      });
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        console.log('Notification tapped:', response);
+      });
+    } catch (error: any) {
+      console.error('Notification setup error:', error);
+      if (error.response) {
+        console.error('Error response:', error.response.data);
+      }
+    }
+  };
   useEffect(() => {
     if (!token) {
       getUserData();
@@ -77,7 +121,7 @@ export default function HomeScreen() {
     if (token) {
       getUniversities();
       getCollections();
-      // setupNotifications();
+      setupNotifications();
     }
   }, [token]);
   const getUserData = async () => {
@@ -129,18 +173,18 @@ export default function HomeScreen() {
   };
 
   return (
-    <ScrollView>
-      <StatusBar translucent barStyle="dark-content" />
-      <View>
+    <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+      <StatusBar translucent barStyle="dark-content" backgroundColor="#035AA6" />
+      <View style={styles.adsContainer}>
         <AdsComponent />
       </View>
       {loading ? (
-        <View style={{ backgroundColor: 'white', flex: 1 }}>
+        <View style={styles.loadingContainer}>
           <Loading />
         </View>
       ) : (
         <>
-          <View>
+          <View style={styles.universitiesSection}>
             <FlatList
               data={universities}
               renderItem={({ item }) => (
@@ -155,21 +199,17 @@ export default function HomeScreen() {
               horizontal
               inverted
               showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ paddingVertical: 16, paddingHorizontal: 8 }}
+              contentContainerStyle={styles.universitiesList}
             />
           </View>
           {collections.length <= 0 ? (
             <></>
           ) : (
             <View>
-              <View
-                style={[
-                  { flexDirection: 'row', justifyContent: 'space-between' },
-                  styles.discountTitle,
-                ]}>
+              <View style={styles.discountTitle}>
                 <TouchableWithoutFeedback
                   onPress={() => navigation.navigate('AllCollections', { token })}>
-                  <Text style={{ fontSize: 20, color: '#001A6E', marginTop: 3 }}>عرض الكل</Text>
+                  <Text style={styles.seeAllText}>عرض الكل</Text>
                 </TouchableWithoutFeedback>
                 <Text style={styles.collectionTitle}>العروض</Text>
               </View>
@@ -183,24 +223,15 @@ export default function HomeScreen() {
               />
             </View>
           )}
-          <View>
-            <Text
-              style={{
-                textAlign: 'right',
-                marginRight: 15,
-                marginBottom: 20,
-                fontSize: 25,
-                fontWeight: 'bold',
-              }}>
-              شائع الان
-            </Text>
+          <View style={styles.popularSection}>
+            <Text style={styles.popularTitle}>شائع الان</Text>
             <FlatList
               data={courses}
               renderItem={({ item }) => <CourseCard data={item} />}
               keyExtractor={(item: any) => item.id}
               showsHorizontalScrollIndicator={false}
               scrollEnabled={false}
-              ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+              ItemSeparatorComponent={() => <View style={styles.separator} />}
             />
           </View>
         </>
@@ -210,18 +241,73 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    marginHorizontal: '5%',
+  scrollView: {
+    backgroundColor: '#F5F7FA',
+  },
+  scrollContent: {
+    paddingBottom: 30,
+  },
+  adsContainer: {
+    backgroundColor: '#ACCAF2',
+    paddingTop: 8,
+  },
+  loadingContainer: {
+    backgroundColor: '#F5F7FA',
+    flex: 1,
+    minHeight: 400,
+  },
+  universitiesSection: {
+    backgroundColor: '#F5F7FA',
+  },
+  universitiesList: {
+    paddingVertical: 16,
+    paddingHorizontal: 8,
   },
   discountTitle: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     fontWeight: 'bold',
-    backgroundColor: '#dbdbdb',
-    padding: 10,
-    borderRadius: 10,
+    backgroundColor: '#ACCAF2',
+    padding: 15,
+    borderRadius: 12,
     marginHorizontal: '5%',
     marginBottom: 10,
+    marginTop: 8,
+    shadowColor: '#035AA6',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  seeAllText: {
+    fontSize: 16,
+    color: '#035AA6',
+    marginTop: 3,
+    fontWeight: '600',
   },
   collectionTitle: {
-    fontSize: 25,
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#035AA6',
+  },
+  popularSection: {
+    backgroundColor: '#F5F7FA',
+    paddingTop: 8,
+  },
+  popularTitle: {
+    textAlign: 'right',
+    marginRight: 15,
+    marginBottom: 20,
+    marginTop: 10,
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#035AA6',
+  },
+  separator: {
+    height: 10,
   },
 });

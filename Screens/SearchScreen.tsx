@@ -55,29 +55,34 @@ export default function SearchScreen() {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <SafeAreaView style={styles.safeArea}>
-        {/* <StatusBar style="dark" /> */}
-
-        <View style={styles.searchContainer}>
-          <TextInput
-            placeholder="Search Course"
-            // placeholderTextColor="lightgray"
-            onChangeText={(text) => searchCourses(text)}
-            style={styles.textInput}
-          />
-          <TouchableOpacity
-            onPress={() => navigation.navigate('Drawer')}
-            style={styles.closeButton}>
-            <Ionicons name="close" size={25} color="white" />
-          </TouchableOpacity>
+        <StatusBar translucent barStyle="dark-content" backgroundColor="#035AA6" />
+        <View style={styles.headerContainer}>
+          <View style={styles.searchContainer}>
+            <Ionicons name="search" size={20} color="#8593A6" style={styles.searchIcon} />
+            <TextInput
+              placeholder="ابحث عن دورة..."
+              placeholderTextColor="#8593A6"
+              onChangeText={(text) => searchCourses(text)}
+              style={styles.textInput}
+            />
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Drawer')}
+              style={styles.closeButton}>
+              <Ionicons name="close" size={22} color="#FFFFFF" />
+            </TouchableOpacity>
+          </View>
         </View>
 
         {loading ? (
-          <Loading />
+          <View style={styles.loadingContainer}>
+            <Loading />
+          </View>
         ) : results.length > 0 ? (
           <ScrollView
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.scrollContainer}>
-            <Text style={styles.resultsText}>Results ( {results.length} )</Text>
+            contentContainerStyle={styles.scrollContainer}
+            style={styles.scrollView}>
+            <Text style={styles.resultsText}>النتائج ( {results.length} )</Text>
             <View>
               <FlatList
                 data={results}
@@ -85,7 +90,7 @@ export default function SearchScreen() {
                 keyExtractor={(item: any) => item.id}
                 showsHorizontalScrollIndicator={false}
                 scrollEnabled={false}
-                ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+                ItemSeparatorComponent={() => <View style={styles.separator} />}
               />
             </View>
           </ScrollView>
@@ -95,6 +100,7 @@ export default function SearchScreen() {
               source={require('../assets/images/family-enjoying-picnic.png')}
               style={styles.emptyImage}
             />
+            <Text style={styles.emptyText}>ابدأ البحث عن الدورات</Text>
           </View>
         )}
       </SafeAreaView>
@@ -105,48 +111,85 @@ export default function SearchScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    // backgroundColor: '#dbdbdb', // Neutral-800 equivalent
+    backgroundColor: '#F5F7FA',
+  },
+  headerContainer: {
+    backgroundColor: '#ACCAF2',
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
-
-    // paddingTop: 16,
+    paddingBottom: 12,
+    paddingHorizontal: 16,
+    shadowColor: '#035AA6',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   searchContainer: {
-    marginHorizontal: 16,
-    marginBottom: 12,
-    backgroundColor: '#dbdbdb',
+    backgroundColor: '#FFFFFF',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#6B7280', // Neutral-500 equivalent
-    borderRadius: 50,
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    shadowColor: '#035AA6',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    borderLeftWidth: 3,
+    borderLeftColor: '#3F83BF',
+  },
+  searchIcon: {
+    marginRight: 8,
   },
   textInput: {
-    paddingBottom: 4,
-    paddingLeft: 24,
     flex: 1,
     fontSize: 16,
-    fontWeight: '600',
-    color: 'black',
-    letterSpacing: 1.2,
+    fontWeight: '500',
+    color: '#035AA6',
+    textAlign: 'right',
+    paddingVertical: 4,
   },
   closeButton: {
-    borderRadius: 50,
-    padding: 12,
-    margin: 4,
-    backgroundColor: '#6B7280', // Neutral-500 equivalent
+    borderRadius: 20,
+    padding: 8,
+    marginLeft: 8,
+    backgroundColor: '#3F83BF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  scrollView: {
+    backgroundColor: '#F5F7FA',
   },
   scrollContainer: {
-    // paddingHorizontal: 15,
+    paddingBottom: 30,
   },
   resultsText: {
-    color: 'black',
-    marginLeft: 15,
-    fontWeight: '900',
-    marginBottom: 10,
-    fontSize: 15,
+    color: '#035AA6',
+    marginRight: 16,
+    marginLeft: 16,
+    marginTop: 16,
+    marginBottom: 12,
+    fontWeight: 'bold',
+    fontSize: 20,
+    textAlign: 'right',
   },
-
+  separator: {
+    height: 12,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5F7FA',
+  },
   resultItem: {
     marginBottom: 16,
   },
@@ -161,9 +204,19 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#F5F7FA',
+    paddingHorizontal: 20,
   },
   emptyImage: {
-    width: 384,
-    height: 384,
+    width: 300,
+    height: 300,
+    opacity: 0.6,
+  },
+  emptyText: {
+    marginTop: 20,
+    fontSize: 18,
+    color: '#8593A6',
+    fontWeight: '500',
+    textAlign: 'center',
   },
 });

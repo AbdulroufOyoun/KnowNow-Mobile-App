@@ -75,18 +75,41 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: 10,
     borderRadius: 12,
-    //marginHorizontal: '5%',
     marginBottom: 20,
     marginTop: 10,
+    shadowColor: '#035AA6',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    borderLeftWidth: 3,
+    borderLeftColor: '#3F83BF',
+  },
+  priceContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   oldPrice: {
-    textDecorationLine: 'line-through', // Adds the strikethrough effect
-    textDecorationStyle: 'solid', // Optional: Makes the line solid
-    color: 'gray', // Optional: Changes the text color
-    fontSize: 16, // Adjust font size as needed
+    textDecorationLine: 'line-through',
+    textDecorationStyle: 'solid',
+    color: '#8593A6',
+    fontSize: 15,
+    marginRight: 8,
+  },
+  newPrice: {
+    color: '#035AA6',
+    fontSize: 17,
+    fontWeight: 'bold',
   },
   title: {
-    fontSize: 18,
+    fontSize: 19,
+    fontWeight: 'bold',
+    color: '#035AA6',
+    flex: 1,
+    textAlign: 'right',
   },
   seeAll: {
     fontSize: 18,
@@ -99,12 +122,17 @@ const styles = StyleSheet.create({
     marginRight: 16,
   },
   movieImage: {
-    borderRadius: 24,
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: '#ACCAF2',
   },
   movieTitle: {
     marginRight: 10,
     marginTop: 5,
     textAlign: 'right',
     height: 25,
+    fontSize: 13,
+    color: '#457ABF',
+    fontWeight: '500',
   },
 });

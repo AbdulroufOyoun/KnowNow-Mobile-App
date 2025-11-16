@@ -1,12 +1,39 @@
 import { Text, ScrollView, View, TouchableWithoutFeedback, Linking } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { showMedia } from 'router/data';
 
 export default function AboutUsScreen() {
   const [telegramUrl, setTelegramUrl] = useState('');
   const [instagramUrl, setInstagramUrl] = useState('');
   const [whatsappUrl, setWhatsappUrl] = useState('');
+  useEffect(() => {
+    console.log('getUrls');
+    getUrls();
+  }, []);
+  const getUrls = () => {
+    showMedia()
+      .then((res) => {
+        console.log('res.data');
+        console.log(res.data);
 
+        if (res.data) {
+          if (res.data.telegram) {
+            setTelegramUrl(res.data.telegram.url || res.data.telegram);
+          }
+          if (res.data.instagram) {
+            setInstagramUrl(res.data.instagram.url || res.data.instagram);
+          }
+          if (res.data.whatsapp) {
+            setWhatsappUrl(res.data.whatsapp.url || res.data.whatsapp);
+          }
+        }
+      })
+      .catch((err) => {
+        console.log('err');
+        console.log(err);
+      });
+  };
   const openInstagram = () => {
     Linking.openURL(instagramUrl);
   };

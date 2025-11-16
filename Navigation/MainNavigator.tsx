@@ -111,11 +111,11 @@ export default function MainNavigator() {
           ),
         })}>
         <Drawer.Screen name="Home" component={HomeScreen} options={{ title: 'الصفحة الرئيسية' }} />
-        {/* <Drawer.Screen
+        <Drawer.Screen
           name="MyCourses"
           component={MyCoursesNavigation}
           options={{ title: 'دوراتي' }}
-        /> */}
+        />
         <Drawer.Screen
           name="ChangePassword"
           component={ChangePasswordScreen}
@@ -142,7 +142,7 @@ export default function MainNavigator() {
       <Stack.Screen name="CoursePlayList" component={CourseNavigator} />
       <Stack.Screen name="AllCollections" component={AllCollectionsScreen} />
       <Stack.Screen name="Collection" component={CollectionNavigator} />
-      {/* <Stack.Screen name="Pdf" component={ShowPdfScreen} /> */}
+      <Stack.Screen name="Pdf" component={ShowPdfScreen} />
       <Stack.Screen name="Video" component={ShowCourseVideo} />
       <Stack.Screen name="Years" component={UniversityNavigator} />
     </Stack.Navigator>

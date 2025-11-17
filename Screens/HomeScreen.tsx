@@ -12,13 +12,13 @@ import {
   View,
   Platform,
 } from 'react-native';
-import AdsComponent from '../Components/AdsComponents';
 import { showCollections, showCourses, showUniversities, updateFcmToken } from '../router/data';
 import CollectionList from '../Components/CollectionList';
 import CourseCard from '../Components/CourseCard';
 import Loading from '../Components/loading';
 import { useNavigation } from '@react-navigation/native';
 import UniversitiesCard from 'Components/UniversitiesCard';
+import TopAdsComponent from '../Components/AdsComponents';
 
 const currentDate = new Date();
 const formattedDate = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
@@ -176,7 +176,7 @@ export default function HomeScreen() {
     <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
       <StatusBar translucent barStyle="dark-content" backgroundColor="#035AA6" />
       <View style={styles.adsContainer}>
-        <AdsComponent />
+        <TopAdsComponent />
       </View>
       {loading ? (
         <View style={styles.loadingContainer}>

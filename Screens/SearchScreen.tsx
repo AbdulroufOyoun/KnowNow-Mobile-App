@@ -28,27 +28,54 @@ export default function SearchScreen() {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [token, setToken] = useState(null);
+  const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
     getUser();
-  }, [token]);
+  }, []);
   const getUser = async () => {
     const userData = await AsyncStorage.getItem('user');
     setToken(userData ? (JSON.parse(userData).token ?? null) : null);
   };
-  const searchCourses = (title: any) => {
-    if (title !== '') {
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (searchText !== '') {
+        performSearch(searchText);
+      } else {
+        setResults([]);
+        setLoading(false);
+      }
+    }, 1000); // 1 second delay
+
+    return () => clearTimeout(timeoutId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchText, token]);
+
+  const performSearch = (title: string) => {
+    if (title !== '' && token) {
       setLoading(true);
       SearchCourses(token, title)
         .then((response) => {
           setResults(response.data.data);
+          console.log(response.data.data);
           setLoading(false);
         })
         .catch((error) => {
           console.error('Error fetching data: ', error);
+          setLoading(false);
         });
     } else {
       setResults([]);
+      setLoading(false);
+    }
+  };
+
+  const handleSearchTextChange = (text: string) => {
+    setSearchText(text);
+    if (text === '') {
+      setResults([]);
+      setLoading(false);
     }
   };
 
@@ -62,7 +89,8 @@ export default function SearchScreen() {
             <TextInput
               placeholder="ابحث عن دورة..."
               placeholderTextColor="#8593A6"
-              onChangeText={(text) => searchCourses(text)}
+              onChangeText={handleSearchTextChange}
+              value={searchText}
               style={styles.textInput}
             />
             <TouchableOpacity
@@ -115,7 +143,7 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     backgroundColor: '#ACCAF2',
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight - 10 : 0,
     paddingBottom: 12,
     paddingHorizontal: 16,
     shadowColor: '#035AA6',

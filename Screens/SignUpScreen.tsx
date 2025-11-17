@@ -6,7 +6,6 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableNativeFeedback,
   TouchableOpacity,
   View,
   Keyboard,
@@ -15,7 +14,9 @@ import {
   Platform,
   ScrollView,
   TouchableWithoutFeedback,
+  StatusBar,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { showUniversities, SignUp } from '../router/data';
 
@@ -223,163 +224,236 @@ export default function SignUpScreen() {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+        style={styles.keyboardView}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          nestedScrollEnabled={true}>
           <View style={styles.container}>
-            <Text style={styles.title}>مستخدم جديد</Text>
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={[styles.input, errors.name && styles.inputError]}
-                placeholder="الأسم"
-                placeholderTextColor="#aaa"
-                value={name}
-                onChangeText={(text) => {
-                  setName(text);
-                  if (errors.name) {
-                    setErrors({ ...errors, name: '' });
-                  }
-                }}
-              />
-              {errors.name ? <Text style={styles.errorText}>{errors.name}</Text> : null}
-            </View>
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={[styles.input, errors.phone && styles.inputError]}
-                placeholder="رقم الهاتف"
-                keyboardType="numeric"
-                placeholderTextColor="#aaa"
-                value={phone}
-                onChangeText={(text) => {
-                  setPhone(text);
-                  if (errors.phone) {
-                    setErrors({ ...errors, phone: '' });
-                  }
-                }}
-              />
-              {errors.phone ? <Text style={styles.errorText}>{errors.phone}</Text> : null}
-            </View>
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={[styles.input, errors.email && styles.inputError]}
-                placeholder="البريد الالكتروني"
-                keyboardType="email-address"
-                placeholderTextColor="#aaa"
-                value={email}
-                onChangeText={(text) => {
-                  setEmail(text);
-                  if (errors.email) {
-                    setErrors({ ...errors, email: '' });
-                  }
-                }}
-              />
-              {errors.email ? <Text style={styles.errorText}>{errors.email}</Text> : null}
-            </View>
-            <View style={styles.inputContainer}>
-              <RNPickerSelect
-                style={{
-                  inputIOS: {
-                    width: '90%',
-                    marginStart: '5%',
-                    height: 50,
-                    borderWidth: 1,
-                    borderColor: errors.university ? '#FF6B6B' : '#ccc',
-                    borderRadius: 8,
-                    textAlign: 'right',
-                    paddingHorizontal: 12,
-                    marginBottom: errors.university ? 4 : 16,
-                    writingDirection: 'rtl',
-                    backgroundColor: '#fff',
-                    color: 'black',
-                  },
-                  inputAndroid: {
-                    width: '100%',
-                    color: 'black',
-                    textAlign: 'right',
-                    // marginStart: '5%',
-                    height: 50,
-                    writingDirection: 'rtl',
-                    paddingHorizontal: 12,
-                    marginBottom: errors.university ? 4 : 16,
-                    backgroundColor: '#fff',
-                    borderWidth: 1,
-                    borderColor: errors.university ? '#FF6B6B' : '#ccc',
-                    borderRadius: 8,
-                  },
-                  inputIOSContainer: {
-                    zIndex: 100,
-                  },
-                }}
-                textInputProps={{
-                  textAlign: 'right',
-                }}
-                darkTheme={true}
-                placeholder={{
-                  label: 'الجامعة',
-                  value: null,
-                  color: '#aaa',
-                }}
-                onValueChange={(value: any) => {
-                  setUniversityId(value);
-                  if (errors.university) {
-                    setErrors({ ...errors, university: '' });
-                  }
-                }}
-                items={universities}
-              />
-              {errors.university ? <Text style={styles.errorText}>{errors.university}</Text> : null}
+            <StatusBar translucent barStyle="light-content" backgroundColor="#035AA6" />
+
+            <View style={styles.headerSection}>
+              <View style={styles.logoContainer}>
+                <Ionicons name="person-add" size={60} color="#FFFFFF" />
+              </View>
+              <Text style={styles.title}>إنشاء حساب جديد</Text>
+              <Text style={styles.subtitle}>انضم إلى منصة التعليم الذكية</Text>
             </View>
 
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={[styles.input, errors.password && styles.inputError]}
-                placeholder="كلمة المرور"
-                secureTextEntry
-                placeholderTextColor="#aaa"
-                value={password}
-                onChangeText={(text) => {
-                  setPassword(text);
-                  if (errors.password) {
-                    setErrors({ ...errors, password: '' });
-                  }
-                }}
-              />
-              {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
-            </View>
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={[styles.input, errors.passwordConfirmation && styles.inputError]}
-                placeholder="تأكيد كلمة المرور"
-                secureTextEntry
-                placeholderTextColor="#aaa"
-                value={passwordConfirmation}
-                onChangeText={(text) => {
-                  setPasswordConfirmation(text);
-                  if (errors.passwordConfirmation) {
-                    setErrors({ ...errors, passwordConfirmation: '' });
-                  }
-                }}
-              />
-              {errors.passwordConfirmation ? (
-                <Text style={styles.errorText}>{errors.passwordConfirmation}</Text>
-              ) : null}
-            </View>
-            <TouchableOpacity
-              style={[styles.button, loading && styles.buttonDisabled]}
-              onPress={handleLogin}
-              disabled={loading}>
-              {loading ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <Text style={styles.buttonText}>انشاء الحساب</Text>
-              )}
-            </TouchableOpacity>
+            <View style={styles.formContainer}>
+              <View style={styles.inputContainer}>
+                <View style={styles.inputWrapper}>
+                  <Ionicons
+                    name="person-outline"
+                    size={22}
+                    color={errors.name ? '#FF6B6B' : '#8593A6'}
+                    style={styles.inputIcon}
+                  />
+                  <TextInput
+                    style={[styles.input, errors.name && styles.inputError]}
+                    placeholder="الأسم"
+                    placeholderTextColor="#8593A6"
+                    value={name}
+                    onChangeText={(text) => {
+                      setName(text);
+                      if (errors.name) {
+                        setErrors({ ...errors, name: '' });
+                      }
+                    }}
+                  />
+                </View>
+                {errors.name ? <Text style={styles.errorText}>{errors.name}</Text> : null}
+              </View>
 
-            <Text style={styles.signupText}>
-              لديك حساب بالفعل؟
-              <TouchableNativeFeedback onPress={() => navigation.navigate('Login')}>
-                <Text style={styles.signupLink}>تسجيل الدخول</Text>
-              </TouchableNativeFeedback>
-            </Text>
+              <View style={styles.inputContainer}>
+                <View style={styles.inputWrapper}>
+                  <Ionicons
+                    name="call-outline"
+                    size={22}
+                    color={errors.phone ? '#FF6B6B' : '#8593A6'}
+                    style={styles.inputIcon}
+                  />
+                  <TextInput
+                    style={[styles.input, errors.phone && styles.inputError]}
+                    placeholder="رقم الهاتف"
+                    keyboardType="numeric"
+                    placeholderTextColor="#8593A6"
+                    value={phone}
+                    onChangeText={(text) => {
+                      setPhone(text);
+                      if (errors.phone) {
+                        setErrors({ ...errors, phone: '' });
+                      }
+                    }}
+                  />
+                </View>
+                {errors.phone ? <Text style={styles.errorText}>{errors.phone}</Text> : null}
+              </View>
+
+              <View style={styles.inputContainer}>
+                <View style={styles.inputWrapper}>
+                  <Ionicons
+                    name="mail-outline"
+                    size={22}
+                    color={errors.email ? '#FF6B6B' : '#8593A6'}
+                    style={styles.inputIcon}
+                  />
+                  <TextInput
+                    style={[styles.input, errors.email && styles.inputError]}
+                    placeholder="البريد الالكتروني"
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    placeholderTextColor="#8593A6"
+                    value={email}
+                    onChangeText={(text) => {
+                      setEmail(text);
+                      if (errors.email) {
+                        setErrors({ ...errors, email: '' });
+                      }
+                    }}
+                  />
+                </View>
+                {errors.email ? <Text style={styles.errorText}>{errors.email}</Text> : null}
+              </View>
+
+              <View style={styles.inputContainer}>
+                <View
+                  style={[styles.pickerWrapper, errors.university && styles.pickerWrapperError]}>
+                  <Ionicons
+                    name="school-outline"
+                    size={22}
+                    color={errors.university ? '#FF6B6B' : '#8593A6'}
+                    style={styles.inputIcon}
+                  />
+                  <View style={styles.pickerContainer}>
+                    <RNPickerSelect
+                      style={{
+                        inputIOS: {
+                          width: '100%',
+                          height: 56,
+                          textAlign: 'right',
+                          paddingVertical: 0,
+                          paddingRight: 0,
+                          color: '#035AA6',
+                          fontSize: 16,
+                          writingDirection: 'rtl',
+                        },
+                        inputAndroid: {
+                          width: '100%',
+                          height: 56,
+                          textAlign: 'right',
+                          paddingVertical: 0,
+                          paddingRight: 0,
+                          color: '#035AA6',
+                          fontSize: 16,
+                          writingDirection: 'rtl',
+                        },
+                        viewContainer: {
+                          flex: 1,
+                        },
+                        iconContainer: {
+                          left: 0,
+                          right: undefined,
+                        },
+                      }}
+                      textInputProps={{
+                        textAlign: 'right',
+                      }}
+                      darkTheme={true}
+                      placeholder={{
+                        label: 'الجامعة',
+                        value: null,
+                        color: '#8593A6',
+                      }}
+                      onValueChange={(value: any) => {
+                        setUniversityId(value);
+                        if (errors.university) {
+                          setErrors({ ...errors, university: '' });
+                        }
+                      }}
+                      items={universities}
+                      useNativeAndroidPickerStyle={false}
+                    />
+                  </View>
+                </View>
+                {errors.university ? (
+                  <Text style={styles.errorText}>{errors.university}</Text>
+                ) : null}
+              </View>
+
+              <View style={styles.inputContainer}>
+                <View style={styles.inputWrapper}>
+                  <Ionicons
+                    name="lock-closed-outline"
+                    size={22}
+                    color={errors.password ? '#FF6B6B' : '#8593A6'}
+                    style={styles.inputIcon}
+                  />
+                  <TextInput
+                    style={[styles.input, errors.password && styles.inputError]}
+                    placeholder="كلمة المرور"
+                    secureTextEntry
+                    placeholderTextColor="#8593A6"
+                    value={password}
+                    onChangeText={(text) => {
+                      setPassword(text);
+                      if (errors.password) {
+                        setErrors({ ...errors, password: '' });
+                      }
+                    }}
+                  />
+                </View>
+                {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
+              </View>
+
+              <View style={styles.inputContainer}>
+                <View style={styles.inputWrapper}>
+                  <Ionicons
+                    name="lock-closed-outline"
+                    size={22}
+                    color={errors.passwordConfirmation ? '#FF6B6B' : '#8593A6'}
+                    style={styles.inputIcon}
+                  />
+                  <TextInput
+                    style={[styles.input, errors.passwordConfirmation && styles.inputError]}
+                    placeholder="تأكيد كلمة المرور"
+                    secureTextEntry
+                    placeholderTextColor="#8593A6"
+                    value={passwordConfirmation}
+                    onChangeText={(text) => {
+                      setPasswordConfirmation(text);
+                      if (errors.passwordConfirmation) {
+                        setErrors({ ...errors, passwordConfirmation: '' });
+                      }
+                    }}
+                  />
+                </View>
+                {errors.passwordConfirmation ? (
+                  <Text style={styles.errorText}>{errors.passwordConfirmation}</Text>
+                ) : null}
+              </View>
+
+              <TouchableOpacity
+                style={[styles.button, loading && styles.buttonDisabled]}
+                onPress={handleLogin}
+                disabled={loading}
+                activeOpacity={0.8}>
+                {loading ? (
+                  <ActivityIndicator color="#FFFFFF" size="small" />
+                ) : (
+                  <Text style={styles.buttonText}>إنشاء الحساب</Text>
+                )}
+              </TouchableOpacity>
+
+              <View style={styles.signupContainer}>
+                <TouchableOpacity onPress={() => navigation.navigate('Login')} activeOpacity={0.7}>
+                  <Text style={styles.signupLink}>تسجيل الدخول</Text>
+                </TouchableOpacity>
+                <Text style={styles.signupText}>لديك حساب بالفعل؟ </Text>
+              </View>
+            </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -387,68 +461,171 @@ export default function SignUpScreen() {
   );
 }
 const styles = StyleSheet.create({
-  container: {
+  keyboardView: {
     flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 30,
+  },
+  container: {
+    backgroundColor: '#F5F7FA',
+  },
+  headerSection: {
+    backgroundColor: '#035AA6',
+    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) + 20 : 60,
+    paddingBottom: 40,
+    paddingHorizontal: 24,
+    alignItems: 'center',
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+    shadowColor: '#035AA6',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  logoContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f4f4f4',
-    padding: 16,
+    marginBottom: 16,
   },
   title: {
     fontSize: 28,
+    textAlign: 'center',
     fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 24,
+    color: '#FFFFFF',
+    marginBottom: 8,
+    lineHeight: 38,
+  },
+  subtitle: {
+    fontSize: 16,
+    textAlign: 'center',
+    color: '#ACCAF2',
+    fontWeight: '500',
+  },
+  formContainer: {
+    paddingHorizontal: 24,
+    paddingTop: 32,
   },
   inputContainer: {
-    width: '90%',
-    marginBottom: 4,
+    marginBottom: 20,
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: '#E0E0E0',
+    paddingHorizontal: 16,
+    shadowColor: '#035AA6',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  pickerWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: '#E0E0E0',
+    paddingHorizontal: 16,
+    shadowColor: '#035AA6',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    minHeight: 56,
+  },
+  pickerWrapperError: {
+    borderColor: '#FF6B6B',
+    borderWidth: 2,
+  },
+  pickerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  inputIcon: {
+    marginRight: 12,
   },
   input: {
-    width: '100%',
-    color: 'black',
-    height: 50,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    backgroundColor: '#fff',
+    flex: 1,
+    height: 56,
+    fontSize: 16,
+    color: '#035AA6',
+    textAlign: 'right',
+    paddingVertical: 0,
   },
   inputError: {
     borderColor: '#FF6B6B',
-    borderWidth: 1.5,
+    borderWidth: 2,
   },
   errorText: {
     color: '#FF6B6B',
-    fontSize: 12,
-    marginTop: 4,
-    marginBottom: 8,
+    fontSize: 13,
+    marginTop: 8,
     marginRight: 4,
     textAlign: 'right',
+    fontWeight: '500',
   },
   button: {
-    width: '90%',
-    height: 50,
-    backgroundColor: '#0066cc',
-    borderRadius: 8,
+    width: '100%',
+    height: 56,
+    backgroundColor: '#035AA6',
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 16,
+    marginTop: 8,
+    shadowColor: '#035AA6',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 5,
   },
   buttonText: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: 18,
     fontWeight: 'bold',
-  },
-  signupText: {
-    marginTop: 17,
-    color: '#555',
-  },
-  signupLink: {
-    color: '#0066cc',
-    fontWeight: 'bold',
+    letterSpacing: 0.5,
   },
   buttonDisabled: {
-    opacity: 0.6,
+    opacity: 0.7,
+  },
+  signupContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 24,
+    marginBottom: 20,
+  },
+  signupText: {
+    color: '#8593A6',
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  signupLink: {
+    color: '#035AA6',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textDecorationLine: 'underline',
   },
 });

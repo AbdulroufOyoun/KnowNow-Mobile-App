@@ -223,6 +223,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     paddingHorizontal: 20,
     marginBottom: 10,
+    borderRadius: 10,
   },
   drawerTitle: {
     fontSize: 24,

@@ -18,7 +18,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
 // import { findMovies } from '../data';
-import Loading from '../Components/loading';
+import { SearchScreenSkeleton } from '../Components/SkeletonLoader';
 import { SearchCourses } from '../router/data';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CourseCard from '../Components/CourseCard';
@@ -102,9 +102,7 @@ export default function SearchScreen() {
         </View>
 
         {loading ? (
-          <View style={styles.loadingContainer}>
-            <Loading />
-          </View>
+          <SearchScreenSkeleton />
         ) : results.length > 0 ? (
           <ScrollView
             showsVerticalScrollIndicator={false}
@@ -143,7 +141,7 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     backgroundColor: '#ACCAF2',
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight - 10 : 0,
+    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) - 10 : 0,
     paddingBottom: 12,
     paddingHorizontal: 16,
     shadowColor: '#035AA6',
@@ -211,12 +209,6 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: 12,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5F7FA',
   },
   resultItem: {
     marginBottom: 16,

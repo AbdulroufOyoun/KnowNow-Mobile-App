@@ -1,4 +1,5 @@
 import { View, Text, TouchableWithoutFeedback, StyleSheet } from 'react-native';
+import React, { useCallback } from 'react';
 
 type NewsProps = {
   id: string;
@@ -8,14 +9,15 @@ type NewsProps = {
 };
 
 const UniversitiesCard = ({ id, name, navigation, token }: NewsProps) => {
+  const handlePress = useCallback(() => {
+    navigation.navigate('Years', {
+      token: token,
+      university_id: id,
+    });
+  }, [navigation, token, id]);
+
   return (
-    <TouchableWithoutFeedback
-      onPress={() => {
-        navigation.navigate('Years', {
-          token: token,
-          university_id: id,
-        });
-      }}>
+    <TouchableWithoutFeedback onPress={handlePress}>
       <View style={styles.container}>
         <Text style={styles.text}>{name}</Text>
       </View>
@@ -49,4 +51,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default UniversitiesCard;
+export default React.memo(UniversitiesCard);

@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import {
   Alert,
   FlatList,
@@ -11,14 +11,17 @@ import {
   TouchableWithoutFeedback,
   View,
   Platform,
+  RefreshControl,
 } from 'react-native';
 import { showCollections, showCourses, showUniversities, updateFcmToken } from '../router/data';
 import CollectionList from '../Components/CollectionList';
 import CourseCard from '../Components/CourseCard';
-import Loading from '../Components/loading';
+import { HomeScreenSkeleton } from '../Components/SkeletonLoader';
 import { useNavigation } from '@react-navigation/native';
 import UniversitiesCard from 'Components/UniversitiesCard';
 import TopAdsComponent from '../Components/TopAdsComponent';
+import { showErrorAlert, logError } from '../utils/errorHandler';
+import { useNetworkState, NetworkBanner } from '../utils/networkUtils';
 
 const currentDate = new Date();
 const formattedDate = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
@@ -26,10 +29,12 @@ const formattedDate = `${currentDate.getFullYear()}-${String(currentDate.getMont
 export default function HomeScreen() {
   const [collections, setCollections] = useState([]);
   const [courses, setCourses] = useState([]);
-  const [token, setToken] = useState(null);
+  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const navigation = useNavigation<any>();
   const [universities, setUniversities] = useState<any>([]);
+  const { isConnected } = useNetworkState();
 
   const requestUserPermission = async () => {
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
@@ -123,6 +128,7 @@ export default function HomeScreen() {
       getCollections();
       setupNotifications();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
   const getUserData = async () => {
     try {
@@ -138,50 +144,77 @@ export default function HomeScreen() {
     }
   };
 
-  const getUniversities = () => {
+  const getUniversities = useCallback(() => {
     showUniversities()
       .then((response) => {
         setUniversities(response.data.data);
       })
       .catch((error: any) => {
-        console.log(error.message);
+        logError(error, 'getUniversities');
+        if (__DEV__) {
+          showErrorAlert(error, 'خطأ في تحميل الجامعات');
+        }
       });
-  };
+  }, []);
 
-  const getCollections = () => {
-    if (collections.length === 0) {
-      showCollections(token)
-        .then((response) => {
-          setCollections(response.data.data);
-          getCourses();
-          setLoading(false);
+  const getCourses = useCallback(() => {
+    if (!token) return;
+    showCourses(token)
+      .then((response) => {
+        setCourses(response.data.data);
+      })
+      .catch((error: any) => {
+        logError(error, 'getCourses');
+        if (__DEV__) {
+          showErrorAlert(error, 'خطأ في تحميل الدورات');
+        }
+      });
+  }, [token]);
+
+  const getCollections = useCallback(() => {
+    if (!token) return;
+    showCollections(token)
+      .then((response) => {
+        setCollections(response.data.data);
+        getCourses();
+        setLoading(false);
+      })
+      .catch((error: any) => {
+        logError(error, 'getCollections');
+        setLoading(false);
+        if (__DEV__) {
+          showErrorAlert(error, 'خطأ في تحميل العروض');
+        }
+      });
+  }, [token, getCourses]);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    if (token) {
+      Promise.all([getUniversities(), getCollections(), getCourses()])
+        .then(() => {
+          setRefreshing(false);
         })
-        .catch((error: any) => {
-          console.log('collection error:', error.message);
+        .catch(() => {
+          setRefreshing(false);
         });
+    } else {
+      setRefreshing(false);
     }
-  };
-
-  const getCourses = () => {
-    if (courses.length === 0) {
-      showCourses(token)
-        .then((response) => {
-          setCourses(response.data.data);
-        })
-        .catch(() => {});
-    }
-  };
+  }, [token, getUniversities, getCollections, getCourses]);
 
   return (
-    <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+    <ScrollView
+      style={styles.scrollView}
+      contentContainerStyle={styles.scrollContent}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
       <StatusBar translucent barStyle="dark-content" backgroundColor="#035AA6" />
+      <NetworkBanner isConnected={isConnected} />
       <View style={styles.adsContainer}>
         <TopAdsComponent />
       </View>
       {loading ? (
-        <View style={styles.loadingContainer}>
-          <Loading />
-        </View>
+        <HomeScreenSkeleton />
       ) : (
         <>
           <View style={styles.universitiesSection}>
@@ -195,11 +228,12 @@ export default function HomeScreen() {
                   token={token}
                 />
               )}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item) => String(item.id)}
               horizontal
               inverted
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.universitiesList}
+              removeClippedSubviews={true}
             />
           </View>
           {collections.length <= 0 ? (
@@ -216,10 +250,11 @@ export default function HomeScreen() {
               <FlatList
                 data={collections}
                 renderItem={({ item }) => <CollectionList data={item} token={token} />}
-                keyExtractor={(item: any) => item.id}
+                keyExtractor={(item: any) => String(item.id)}
                 showsHorizontalScrollIndicator={false}
                 scrollEnabled={false}
                 inverted={true}
+                removeClippedSubviews={true}
               />
             </View>
           )}
@@ -228,10 +263,11 @@ export default function HomeScreen() {
             <FlatList
               data={courses}
               renderItem={({ item }) => <CourseCard data={item} />}
-              keyExtractor={(item: any) => item.id}
+              keyExtractor={(item: any) => String(item.id)}
               showsHorizontalScrollIndicator={false}
               scrollEnabled={false}
               ItemSeparatorComponent={() => <View style={styles.separator} />}
+              removeClippedSubviews={true}
             />
           </View>
         </>
@@ -250,11 +286,6 @@ const styles = StyleSheet.create({
   adsContainer: {
     backgroundColor: '#ACCAF2',
     paddingTop: 8,
-  },
-  loadingContainer: {
-    backgroundColor: '#F5F7FA',
-    flex: 1,
-    minHeight: 400,
   },
   universitiesSection: {
     backgroundColor: '#F5F7FA',

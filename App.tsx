@@ -3,7 +3,7 @@ import './global.css';
 import 'react-native-gesture-handler';
 import 'react-native-reanimated';
 
-import { allowScreenCaptureAsync, preventScreenCaptureAsync } from 'expo-screen-capture';
+import { preventScreenCaptureAsync } from 'expo-screen-capture';
 
 import { Dimensions, Text, View } from 'react-native';
 import LoginScreen from './Screens/LoginScreen';

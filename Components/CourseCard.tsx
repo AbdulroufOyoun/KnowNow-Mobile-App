@@ -1,23 +1,40 @@
 import { useNavigation } from '@react-navigation/native';
 import { Dimensions, Image, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
-// import { styles } from '../theme';
+import React, { useCallback, useMemo } from 'react';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeigh = Dimensions.get('window').height;
 
-export default function CourseCard({ data }: any) {
+interface CourseCardProps {
+  data: {
+    id: number | string;
+    image: string;
+    name: string;
+    doctor: string;
+    description: string;
+    university: string;
+    price: number | string;
+  };
+}
+
+function CourseCard({ data }: CourseCardProps) {
   const navigation = useNavigation<any>();
+
+  const handlePress = useCallback(() => {
+    navigation.navigate('CoursePlayList', {
+      data: data.id,
+      item: data,
+    });
+  }, [navigation, data]);
+
+  const imageSource = useMemo(() => ({ uri: data.image }), [data.image]);
+  const priceText = useMemo(() => `${data.price} ألف`, [data.price]);
+
   return (
-    <TouchableWithoutFeedback
-      onPress={() =>
-        navigation.navigate('CoursePlayList', {
-          data: data.id,
-          item: data,
-        })
-      }>
+    <TouchableWithoutFeedback onPress={handlePress}>
       <View style={styles.container}>
         <View>
-          <Image source={{ uri: data.image }} style={styles.image} />
+          <Image source={imageSource} style={styles.image} />
         </View>
         <View style={styles.textContainer}>
           <View style={styles.contentWrapper}>
@@ -36,7 +53,7 @@ export default function CourseCard({ data }: any) {
               {data.university}
             </Text>
             <Text style={styles.price} numberOfLines={1}>
-              {data.price} ألف
+              {priceText}
             </Text>
           </View>
         </View>
@@ -44,6 +61,8 @@ export default function CourseCard({ data }: any) {
     </TouchableWithoutFeedback>
   );
 }
+
+export default React.memo(CourseCard);
 
 const styles = StyleSheet.create({
   container: {

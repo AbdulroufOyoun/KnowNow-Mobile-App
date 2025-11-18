@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import { ShowCoursePdf, showMyCourses } from '../router/data';
 import CourseCard from '../Components/CourseCard';
 import * as Network from 'expo-network';
-import Loading from '../Components/loading';
+import { MyCoursesScreenSkeleton } from '../Components/SkeletonLoader';
 
 const currentDate = new Date();
 
@@ -158,9 +158,7 @@ export default function MyCoursesScreen() {
   return (
     <>
       {loading ? (
-        <View style={{ backgroundColor: 'white', flex: 1 }}>
-          <Loading />
-        </View>
+        <MyCoursesScreenSkeleton />
       ) : (
         <>
           <View style={{ marginTop: 30 }}>

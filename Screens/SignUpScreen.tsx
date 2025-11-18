@@ -223,15 +223,17 @@ export default function SignUpScreen() {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardView}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      style={styles.keyboardView}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
-          nestedScrollEnabled={true}>
+          nestedScrollEnabled={true}
+          bounces={false}>
           <View style={styles.container}>
             <StatusBar translucent barStyle="light-content" backgroundColor="#035AA6" />
 
@@ -458,20 +460,22 @@ export default function SignUpScreen() {
             </View>
           </View>
         </ScrollView>
-      </KeyboardAvoidingView>
-    </TouchableWithoutFeedback>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }
 const styles = StyleSheet.create({
   keyboardView: {
     flex: 1,
+    backgroundColor: '#F5F7FA',
   },
   scrollContent: {
     flexGrow: 1,
-    paddingBottom: 30,
+    paddingBottom: 50,
   },
   container: {
     backgroundColor: '#F5F7FA',
+    minHeight: '100%',
   },
   headerSection: {
     backgroundColor: '#035AA6',

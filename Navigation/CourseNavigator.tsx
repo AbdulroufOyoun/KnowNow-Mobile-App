@@ -8,7 +8,7 @@ import {
   ImageBackground,
   StyleSheet,
   Dimensions,
-  TouchableWithoutFeedback,
+  TouchableOpacity,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -38,8 +38,16 @@ export default function CourseNavigator() {
   const route = useRoute();
   const { data = null, item = null } = (route as any).params || {};
   const navigation = useNavigation();
+
+  // Calculate available tabs
+  const hasPractical =
+    contain?.practical && Array.isArray(contain.practical) && contain.practical.length > 0;
+  const hasTheoretical =
+    contain?.theoretical && Array.isArray(contain.theoretical) && contain.theoretical.length > 0;
+
   useEffect(() => {
     getUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
   const getUser = async () => {
@@ -84,15 +92,13 @@ export default function CourseNavigator() {
         <View style={styles.overlay}>
           <SafeAreaView style={styles.safeArea}>
             <View style={styles.contentWrapper}>
-              <TouchableWithoutFeedback
+              <TouchableOpacity
                 onPress={() => navigation.goBack()}
-                style={styles.backButtonContainer}>
-                <View style={styles.backButton}>
-                  <Feather name="chevron-left" size={24} color="white" />
-                  <Text style={styles.backText}> رجوع </Text>
-                </View>
-              </TouchableWithoutFeedback>
-
+                activeOpacity={0.7}
+                style={styles.backButton}>
+                <Feather name="chevron-left" size={24} color="white" />
+                <Text style={styles.backText}> رجوع </Text>
+              </TouchableOpacity>
               <View style={styles.courseInfo}>
                 <Text style={styles.universityText}>{item?.university || ''}</Text>
                 <Text style={styles.courseName}>{item?.name || ''}</Text>
@@ -118,7 +124,11 @@ export default function CourseNavigator() {
                 textAlign: 'right',
                 writingDirection: 'rtl',
               },
-              tabBarIndicatorStyle: { backgroundColor: '#3F83BF', height: 3 },
+              tabBarIndicatorStyle: {
+                backgroundColor: '#3F83BF',
+                height: 3,
+                width: 'auto',
+              },
               tabBarActiveTintColor: '#035AA6',
               tabBarInactiveTintColor: '#8593A6',
               tabBarStyle: {
@@ -129,6 +139,9 @@ export default function CourseNavigator() {
                 shadowOpacity: 0.1,
                 shadowRadius: 4,
               },
+              swipeEnabled: true,
+              animationEnabled: false,
+              lazy: false,
             }}>
             <Tab.Screen
               name="Subscribe"
@@ -136,37 +149,29 @@ export default function CourseNavigator() {
               initialParams={{ courseId: data, contain: contain, token: token }}>
               {(props: any) => <SubscribeComponent {...props} />}
             </Tab.Screen>
-            {contain && (
-              <>
-                {contain.practical &&
-                  Array.isArray(contain.practical) &&
-                  contain.practical.length > 0 && (
-                    <Tab.Screen
-                      name="CoursePlay"
-                      options={{ tabBarLabel: 'عملي' }}
-                      initialParams={{
-                        data: contain.practical,
-                        isSubscribed: contain?.is_subscribed,
-                        token: token,
-                      }}
-                      component={CoursePlayList}
-                    />
-                  )}
-                {contain.theoretical &&
-                  Array.isArray(contain.theoretical) &&
-                  contain.theoretical.length > 0 && (
-                    <Tab.Screen
-                      name="CourseLicture"
-                      options={{ tabBarLabel: 'نظري' }}
-                      initialParams={{
-                        data: contain.theoretical,
-                        isSubscribed: contain?.is_subscribed || false,
-                        token: token,
-                      }}
-                      component={CoursePlayList}
-                    />
-                  )}
-              </>
+            {hasPractical && (
+              <Tab.Screen
+                name="CoursePlay"
+                options={{ tabBarLabel: 'عملي' }}
+                initialParams={{
+                  data: contain.practical,
+                  isSubscribed: contain?.is_subscribed,
+                  token: token,
+                }}
+                component={CoursePlayList}
+              />
+            )}
+            {hasTheoretical && (
+              <Tab.Screen
+                name="CourseLicture"
+                options={{ tabBarLabel: 'نظري' }}
+                initialParams={{
+                  data: contain.theoretical,
+                  isSubscribed: contain?.is_subscribed || false,
+                  token: token,
+                }}
+                component={CoursePlayList}
+              />
             )}
             <Tab.Screen
               name="AboutCourse"
@@ -221,14 +226,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F5F7FA',
   },
-  backButtonContainer: {
-    height: 60,
-  },
   backButton: {
     flexDirection: 'row',
     height: 60,
     alignItems: 'center',
     paddingLeft: 8,
+    paddingRight: 8,
+    paddingVertical: 8,
+    zIndex: 10,
   },
   backText: {
     fontSize: 18,
@@ -237,8 +242,7 @@ const styles = StyleSheet.create({
   },
   courseInfo: {
     flex: 1,
-    justifyContent: 'space-between',
-    marginTop: -70,
+    justifyContent: 'flex-end',
     paddingVertical: 30,
     alignContent: 'space-between',
   },

@@ -211,8 +211,10 @@ export default function SignUpScreen() {
             console.error('Error saving UUID after signup:', error);
           }
         }
-        setLoading(false);
-        navigation.replace('MainNavigator');
+        setTimeout(() => {
+          setLoading(false);
+          navigation.replace('MainNavigator');
+        }, 500);
       })
       .catch((error) => {
         Alert.alert('Wrong Data', error.response.data.message);

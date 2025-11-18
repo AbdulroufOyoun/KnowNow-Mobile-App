@@ -4,19 +4,22 @@ import {
   Dimensions,
   StyleSheet,
   View,
-  TouchableWithoutFeedback,
+  TouchableOpacity,
   Platform,
   StatusBar,
+  ActivityIndicator,
 } from 'react-native';
 import { getUrl } from 'router/data';
 import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { useState, useEffect } from 'react';
 
 const { width } = Dimensions.get('window');
 const isTablet = width >= 768;
 export default function ShowCourseVideo({ route }: any) {
   const { videoName = null, token = null } = route.params || {};
   const navigation = useNavigation();
+  const [loading, setLoading] = useState(true);
   const MyStatusBar = ({ backgroundColor }: any) => (
     <View style={[styles.statusBar, { backgroundColor }]}>
       <View>
@@ -34,6 +37,21 @@ export default function ShowCourseVideo({ route }: any) {
     player.play();
   });
 
+  useEffect(() => {
+    const subscription = player.addListener('statusChange', (status) => {
+      if (status.status === 'readyToPlay') {
+        setLoading(false);
+      } else if (status.status === 'error') {
+        setLoading(false);
+        console.error('Video loading error:', status);
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [player]);
+
   return (
     <>
       {isTablet ? (
@@ -44,16 +62,21 @@ export default function ShowCourseVideo({ route }: any) {
         <View style={{ backgroundColor: 'black', flex: 1 }}>
           <MyStatusBar backgroundColor="#474747" />
           <View style={styles.appBar}>
-            <TouchableWithoutFeedback
+            <TouchableOpacity
               onPress={() => navigation.goBack()}
-              style={{ height: 60, backgroundColor: 'black', marginTop: 50 }}>
-              <View style={{ flexDirection: 'row', height: 60 }}>
-                <Feather name="chevron-left" size={28} color="white" />
-                <Text style={{ fontSize: 20, color: 'white' }}> رجوع </Text>
-              </View>
-            </TouchableWithoutFeedback>
+              activeOpacity={0.7}
+              style={styles.backButton}>
+              <Feather name="chevron-left" size={28} color="white" />
+              <Text style={styles.backText}> رجوع </Text>
+            </TouchableOpacity>
           </View>
           <View style={styles.contentContainer}>
+            {loading && (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#FFFFFF" />
+                <Text style={styles.loadingText}>جاري تحميل الفيديو...</Text>
+              </View>
+            )}
             <VideoView
               style={styles.video}
               player={player}
@@ -74,6 +97,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    position: 'relative',
   },
   video: {
     width: '100%',
@@ -84,5 +108,35 @@ const styles = StyleSheet.create({
   },
   appBar: {
     marginTop: APPBAR_HEIGHT,
+    paddingHorizontal: 16,
+    zIndex: 10,
+  },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 60,
+    paddingVertical: 8,
+  },
+  backText: {
+    fontSize: 20,
+    color: 'white',
+    marginLeft: 8,
+  },
+  loadingContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 5,
+  },
+  loadingText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    marginTop: 16,
+    fontWeight: '500',
   },
 });

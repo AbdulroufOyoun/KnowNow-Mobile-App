@@ -36,7 +36,7 @@ export default function LoginScreen() {
   useEffect(() => {
     getUserData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [uid]);
+  }, []);
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -84,11 +84,19 @@ export default function LoginScreen() {
     setLoading(true);
     Keyboard.dismiss();
     Login({ email: email, password: password, mobile_uuid: uid })
-      .then((response) => {
+      .then(async (response) => {
         AsyncStorage.setItem('user', JSON.stringify(response.data.data));
-        setLoading(false);
-
-        navigation.navigate('MainNavigator');
+        if (uid) {
+          try {
+            await AsyncStorage.setItem('device_uuid', uid);
+          } catch (error) {
+            console.error('Error saving UUID after signup:', error);
+          }
+        }
+        setTimeout(() => {
+          setLoading(false);
+          navigation.navigate('MainNavigator');
+        }, 500);
       })
       .catch((error) => {
         Alert.alert('Wrong Data', error.response.data.message);
@@ -103,13 +111,46 @@ export default function LoginScreen() {
         navigation.replace('MainNavigator');
       } else {
         const id = await AsyncStorage.getItem('device_uuid');
-        setUid(id);
+        if (id) {
+          setUid(id);
+        } else {
+          const newUUID = await getOrCreateUUID();
+          setUid(newUUID);
+        }
       }
     } catch {
       // Handle error silently
     }
   };
+  const generateUUID = () => {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      const r = (Math.random() * 16) | 0;
+      const v = c === 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+  };
 
+  const getOrCreateUUID = async () => {
+    try {
+      const storedUUID = await AsyncStorage.getItem('device_uuid');
+      if (storedUUID) {
+        return storedUUID;
+      } else {
+        const newUUID = generateUUID();
+        await AsyncStorage.setItem('device_uuid', newUUID);
+        return newUUID;
+      }
+    } catch (error) {
+      console.error('Error getting/creating UUID:', error);
+      const newUUID = generateUUID();
+      try {
+        await AsyncStorage.setItem('device_uuid', newUUID);
+      } catch (e) {
+        console.error('Error saving UUID:', e);
+      }
+      return newUUID;
+    }
+  };
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <KeyboardAvoidingView

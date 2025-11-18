@@ -132,6 +132,11 @@ export default function MainNavigator() {
             fontSize: 20,
             color: '#035AA6',
           },
+          headerLeft: () => (
+            <TouchableOpacity style={styles.drawerButton} onPress={() => navigation.openDrawer()}>
+              <Feather name="menu" size={24} color="#035AA6" />
+            </TouchableOpacity>
+          ),
           headerRight: () => (
             <TouchableOpacity
               style={styles.iconButton}
@@ -285,6 +290,20 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     marginRight: 15,
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: '#FFFFFF',
+    shadowColor: '#035AA6',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  drawerButton: {
+    marginLeft: 15,
     padding: 8,
     borderRadius: 20,
     backgroundColor: '#FFFFFF',

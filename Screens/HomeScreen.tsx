@@ -18,7 +18,7 @@ import CourseCard from '../Components/CourseCard';
 import Loading from '../Components/loading';
 import { useNavigation } from '@react-navigation/native';
 import UniversitiesCard from 'Components/UniversitiesCard';
-import TopAdsComponent from '../Components/AdsComponents';
+import TopAdsComponent from '../Components/TopAdsComponent';
 
 const currentDate = new Date();
 const formattedDate = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;

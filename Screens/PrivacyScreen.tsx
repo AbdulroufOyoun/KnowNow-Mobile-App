@@ -35,7 +35,8 @@ export default function PrivacyScreen() {
           <Text style={styles.bulletText}>•</Text>
           <Text style={styles.bulletContent}>
             معلومات الاستخدام والبيانات الأكاديمية التي يتم جمعها تلقائيًا: مثل نوع الجهاز، نظام
-            التشغيل، وسلوك الاستخدام داخل التطبيق.
+            التشغيل، وسلوك الاستخدام داخل التطبيق، معرف الجهاز الفريد (Device UUID)، ورمز الإشعارات
+            (FCM Token) لإرسال الإشعارات المهمة.
           </Text>
         </View>
       </View>
@@ -50,9 +51,22 @@ export default function PrivacyScreen() {
 
       <View style={styles.sectionCard}>
         <Text style={styles.sectionTitle}>3. مشاركة وكشف المعلومات</Text>
+        <Text style={styles.sectionText}>لا نبيع أو نؤجر بياناتك الشخصية. نشارك البيانات مع:</Text>
+        <View style={styles.bulletPoint}>
+          <Text style={styles.bulletText}>•</Text>
+          <Text style={styles.bulletContent}>
+            مزودي الخدمات التقنية: نستخدم خدمات Firebase (Google) لإدارة الإشعارات والبنية التحتية
+            للتطبيق. تخضع هذه البيانات لسياسة خصوصية Google.
+          </Text>
+        </View>
+        <View style={styles.bulletPoint}>
+          <Text style={styles.bulletText}>•</Text>
+          <Text style={styles.bulletContent}>
+            الخادم الخاص بنا: يتم تخزين بياناتك على خوادمنا الآمنة لتقديم الخدمة التعليمية.
+          </Text>
+        </View>
         <Text style={styles.sectionText}>
-          لا نبيع أو نؤجر بياناتك الشخصية. نشاركها فقط عند الضرورة القانونية أو لحماية حقوقنا
-          ومستخدمي التطبيق.
+          نشارك البيانات فقط عند الضرورة القانونية أو لحماية حقوقنا ومستخدمي التطبيق.
         </Text>
       </View>
 
@@ -66,9 +80,23 @@ export default function PrivacyScreen() {
 
       <View style={styles.sectionCard}>
         <Text style={styles.sectionTitle}>5. حقوق المستخدم</Text>
-        <Text style={styles.sectionText}>
-          لديك الحق في الوصول إلى بياناتك، وتصحيحها إذا كانت غير دقيقة أو غير مكتملة.
-        </Text>
+        <Text style={styles.sectionText}>لديك الحق في:</Text>
+        <View style={styles.bulletPoint}>
+          <Text style={styles.bulletText}>•</Text>
+          <Text style={styles.bulletContent}>الوصول إلى بياناتك الشخصية المحفوظة في التطبيق</Text>
+        </View>
+        <View style={styles.bulletPoint}>
+          <Text style={styles.bulletText}>•</Text>
+          <Text style={styles.bulletContent}>تصحيح البيانات إذا كانت غير دقيقة أو غير مكتملة</Text>
+        </View>
+        <View style={styles.bulletPoint}>
+          <Text style={styles.bulletText}>•</Text>
+          <Text style={styles.bulletContent}>طلب حذف بياناتك من خلال التواصل مع الدعم التقني</Text>
+        </View>
+        <View style={styles.bulletPoint}>
+          <Text style={styles.bulletText}>•</Text>
+          <Text style={styles.bulletContent}>إلغاء الاشتراك في الإشعارات من إعدادات التطبيق</Text>
+        </View>
         <View style={styles.warningBox}>
           <Text style={styles.warningText}>
             ⚠️ عند محاولة تسجيل الدخول من حساب معين بجهاز اخر سيتم حظر الحساب حتى يتم التواصل مع

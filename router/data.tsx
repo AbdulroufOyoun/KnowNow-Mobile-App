@@ -1,7 +1,7 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-// const url = 'http://192.168.1.104:8888/api/';
 const url = 'https://learnnowsyria.com/api/';
+// const url = 'http://192.168.1.5:8888/api/';
 
 export async function getUserData(): Promise<string | null> {
   try {
@@ -44,7 +44,9 @@ export function showMedia() {
 }
 
 // Collections
-export function showCollections(token: any, page = 1, perPage = 3) {
+export function showCollections(token: any, page = 1, perPage = 10) {
+  console.log(token);
+
   return axios.get(url + 'show_collections', {
     headers: {
       'Content-Type': 'application/json',
@@ -67,14 +69,7 @@ export function checkSubscribeCollection(token: any, collectionId: any) {
     },
   });
 }
-// export function showUniversities(token: any) {
-//   return axios.get(url + 'show_user_courses', {
-//     headers: {
-//       'Content-Type': 'application/json',
-//       Authorization: 'Bearer ' + token,
-//     },
-//   });
-// }
+
 // Course
 export function showCourses(token: any, page = 1) {
   return axios.get(url + 'show_courses', {

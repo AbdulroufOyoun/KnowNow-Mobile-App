@@ -4,7 +4,7 @@
     "slug": "KnowNow",
     "version": "1.0.0",
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/icon.png"
     },
     "experiments": {
       "tsconfigPaths": true
@@ -17,7 +17,7 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -25,20 +25,22 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "infoPlist": {
         "NSAppTransportSecurity": {
-          "NSAllowsArbitraryLoads": true,
-          // OR the more secure option below:
+          "NSAllowsArbitraryLoads": false,
           "NSExceptionDomains": {
-            "10.154.21.234": {
-              "NSExceptionAllowsInsecureHTTPLoads": true
+            "learnnowsyria.com": {
+              "NSExceptionAllowsInsecureHTTPLoads": false,
+              "NSIncludesSubdomains": true,
+              "NSExceptionRequiresForwardSecrecy": false,
+              "NSExceptionMinimumTLSVersion": "TLSv1.2"
             }
           }
-        }
-      }
-      
-
+        },
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "bundleIdentifier": "com.abdulroufoyoun.KnowNow"
     },
     "android": {
       "adaptiveIcon": {
@@ -46,13 +48,26 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.abdulroufoyoun.KnowNow",
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "versionCode": 1,
+      "permissions": [
+        "INTERNET",
+        "ACCESS_NETWORK_STATE",
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE",
+        "-android.permission.READ_MEDIA_IMAGES"
+      ],
+      "blockedPermissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "extra": {
       "eas": {
         "projectId": "9a8b2c9a-b699-42fb-a274-0320ed5b11f0"
       }
-    },
-    "owner": "abdulroufoyoun"
+    }
+    // "owner": "abdulroufoyoun"
   }
 }

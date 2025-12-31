@@ -1,6 +1,4 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import MyCoursesScreen from '../Screens/MyCoursesScreen';
-import CourseDetailScreen from '../Screens/CourseDetailScreen';
 import YearScreen from 'Screens/YearsScreen';
 import ChapterScreen from 'Screens/ChapterScreen';
 import YearCoursesScreen from 'Screens/YearCoursesScreens';

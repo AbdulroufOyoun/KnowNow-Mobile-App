@@ -166,6 +166,19 @@ export const YearCoursesScreenSkeleton = () => {
   );
 };
 
+// Skeleton for AllCollectionsScreen
+export const AllCollectionsScreenSkeleton = () => {
+  return (
+    <View style={styles.allCollectionsContainer}>
+      {[1, 2, 3].map((item) => (
+        <View key={item} style={styles.allCollectionsItem}>
+          <CollectionListSkeleton />
+        </View>
+      ))}
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#F5F7FA',
@@ -296,5 +309,13 @@ const styles = StyleSheet.create({
   },
   yearCoursesCardWrapper: {
     marginBottom: 10,
+  },
+  allCollectionsContainer: {
+    backgroundColor: '#F5F7FA',
+    paddingTop: 16,
+    paddingBottom: 30,
+  },
+  allCollectionsItem: {
+    marginBottom: 20,
   },
 });

@@ -18,8 +18,7 @@ export default function SubscribeComponent({ updateSubscriptionStatus, route }: 
           setSubscribed(true);
           navigation.goBack();
         })
-        .catch((error: any) => {
-          console.log(error);
+        .catch(() => {
           setError(true);
           setCode('');
         });

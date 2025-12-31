@@ -90,7 +90,7 @@ export default function LoginScreen() {
           try {
             await AsyncStorage.setItem('device_uuid', uid);
           } catch (error) {
-            console.error('Error saving UUID after signup:', error);
+            // Error saving UUID after login
           }
         }
         setTimeout(() => {
@@ -141,12 +141,11 @@ export default function LoginScreen() {
         return newUUID;
       }
     } catch (error) {
-      console.error('Error getting/creating UUID:', error);
       const newUUID = generateUUID();
       try {
         await AsyncStorage.setItem('device_uuid', newUUID);
       } catch (e) {
-        console.error('Error saving UUID:', e);
+        // Error saving UUID
       }
       return newUUID;
     }

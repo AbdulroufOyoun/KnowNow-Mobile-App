@@ -8,8 +8,6 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-// import { styles } from '../theme';
-// import { useEffect } from 'react';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeigh = Dimensions.get('window').height;

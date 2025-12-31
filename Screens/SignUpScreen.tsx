@@ -76,12 +76,11 @@ export default function SignUpScreen() {
         return newUUID;
       }
     } catch (error) {
-      console.error('Error getting/creating UUID:', error);
       const newUUID = generateUUID();
       try {
         await AsyncStorage.setItem('device_uuid', newUUID);
       } catch (e) {
-        console.error('Error saving UUID:', e);
+        // Error saving UUID
       }
       return newUUID;
     }
@@ -95,8 +94,8 @@ export default function SignUpScreen() {
         }));
         setUniversities(formatted);
       })
-      .catch((error: any) => {
-        console.log(error.message);
+      .catch(() => {
+        // Error fetching universities
       });
   };
 
@@ -208,7 +207,7 @@ export default function SignUpScreen() {
           try {
             await AsyncStorage.setItem('device_uuid', uid);
           } catch (error) {
-            console.error('Error saving UUID after signup:', error);
+            // Error saving UUID after signup
           }
         }
         setTimeout(() => {

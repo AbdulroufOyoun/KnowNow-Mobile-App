@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     paddingVertical: 4,
     borderRadius: 12,
-    backgroundColor: '#ACCAF2',
+    backgroundColor: '#3F83BF',
     overflow: 'hidden',
     flexShrink: 0,
     maxHeight: 36,
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'left',
     fontSize: 13,
-    color: '#457ABF',
+    color: '#ffffff',
     marginRight: 8,
     fontWeight: '500',
     minWidth: 0,
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
   price: {
     fontWeight: 'bold',
     fontSize: 17,
-    color: '#035AA6',
+    color: '#ffffff',
     flexShrink: 0,
   },
 });

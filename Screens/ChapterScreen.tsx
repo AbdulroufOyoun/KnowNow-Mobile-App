@@ -13,7 +13,7 @@ export default function ChapterScreen() {
 
   const navigation = useNavigation<any>();
 
-  const Card = ({ id, name }: { id: number; name: string }) => (
+  const Card = ({ id, name }: { id: string; name: string }) => (
     <TouchableOpacity
       onPress={() => {
         navigation.navigate('Courses', {

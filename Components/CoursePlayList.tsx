@@ -29,8 +29,6 @@ export default function CoursePlayList() {
       const fileInfo = await FileSystem.getInfoAsync(fileUri);
 
       if (fileInfo.exists && fileInfo.isDirectory === false) {
-        console.log('✅ Opening already downloaded PDF:', fileInfo.uri);
-
         navigation.navigate('Pdf', {
           pdf: fileInfo.uri,
           token,
@@ -73,7 +71,6 @@ export default function CoursePlayList() {
       const { uri }: any = await downloadResumable.downloadAsync();
 
       if (uri) {
-        console.log('📄 Downloaded and saved to:', uri);
         navigation.navigate('Pdf', {
           pdf: uri,
           token,
@@ -82,7 +79,6 @@ export default function CoursePlayList() {
         throw new Error('Download failed');
       }
     } catch (error: any) {
-      console.error('❌ Error downloading PDF:', error.message);
       alert('Failed to load PDF: ' + error.message);
     } finally {
       setDownloadingPdf(null);

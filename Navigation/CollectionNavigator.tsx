@@ -17,7 +17,6 @@ import { useEffect, useState } from 'react';
 import { checkSubscribeCollection } from '../router/data';
 import CollectionSubscribeComponent from '../Components/CollectionSubscribeComponent';
 import CourseCard from '../Components/CourseCard';
-// import MyCoursesNavigation from './MyCoursesNavigation';
 
 const Tab = createMaterialTopTabNavigator();
 const screenHeigh = Dimensions.get('window').height;
@@ -31,7 +30,6 @@ const MyStatusBar = ({ backgroundColor }: any) => (
 );
 
 export default function CollectionNavigator() {
-  // const [token, setToken] = useState(null);
   const [subscribed, setSubscribed] = useState(false);
   const route = useRoute();
   const { item = null, token = null }: any = route.params || {};
@@ -42,8 +40,8 @@ export default function CollectionNavigator() {
         .then((response: any) => {
           setSubscribed(response.data.data);
         })
-        .catch((error: any) => {
-          console.log(error.message);
+        .catch(() => {
+          // Error checking subscription
         });
     }
   }, [token, item?.id]);
@@ -66,9 +64,7 @@ export default function CollectionNavigator() {
   return (
     <ScrollView style={{ flex: 1 }}>
       <MyStatusBar backgroundColor="#474747" />
-      <ImageBackground
-        source={{ uri: 'http://192.168.1.5:8888/Images/Courses/87494605972download.jpg' }} // Replace with your image path
-        style={styles.background}>
+      <ImageBackground source={{ uri: item?.image || '' }} style={styles.background}>
         <View style={styles.overlay}>
           <View>
             <View style={styles.background}>

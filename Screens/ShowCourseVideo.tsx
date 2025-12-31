@@ -29,6 +29,7 @@ export default function ShowCourseVideo({ route }: any) {
   );
   const videoSource = {
     uri: getUrl() + 'video/' + videoName,
+    type: 'hls',
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -38,15 +39,16 @@ export default function ShowCourseVideo({ route }: any) {
   });
 
   useEffect(() => {
+    console.log(videoSource);
     const subscription = player.addListener('statusChange', (status) => {
       if (status.status === 'readyToPlay') {
         setLoading(false);
       } else if (status.status === 'error') {
+        console.log('Error loading video', status.error);
         setLoading(false);
-        console.error('Video loading error:', status);
       }
     });
-
+    console.log('Video Source:', videoSource);
     return () => {
       subscription.remove();
     };

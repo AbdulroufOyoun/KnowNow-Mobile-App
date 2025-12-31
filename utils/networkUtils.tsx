@@ -16,7 +16,6 @@ export const checkInternetConnection = async (): Promise<boolean> => {
     const networkState = await Network.getNetworkStateAsync();
     return !!networkState.isInternetReachable;
   } catch (error) {
-    console.error('Error checking network state:', error);
     return false;
   }
 };
@@ -33,7 +32,6 @@ export const getNetworkState = async (): Promise<NetworkState> => {
       type: networkState.type || null,
     };
   } catch (error) {
-    console.error('Error getting network state:', error);
     return {
       isConnected: false,
       isInternetReachable: false,

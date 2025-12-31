@@ -50,7 +50,6 @@ export default function HomeScreen() {
     try {
       const permissionGranted = await requestUserPermission();
       if (!permissionGranted) {
-        console.log('Notification permission not granted');
         return;
       }
 
@@ -64,7 +63,6 @@ export default function HomeScreen() {
       }
 
       const devicePushToken = await Notifications.getDevicePushTokenAsync();
-      console.log('Device Push Token (full object):', JSON.stringify(devicePushToken, null, 2));
 
       let fcmToken: string;
       if (typeof devicePushToken === 'string') {
@@ -72,50 +70,32 @@ export default function HomeScreen() {
       } else if (devicePushToken && typeof devicePushToken === 'object') {
         if (devicePushToken.data && typeof devicePushToken.data === 'string') {
           fcmToken = devicePushToken.data;
-          if (fcmToken.startsWith('ExponentPushToken')) {
-            console.warn(
-              'Received Expo Push Token instead of FCM token. Backend needs to use Expo Push API.'
-            );
-          }
         } else {
-          console.error('Invalid token structure - data is not a string:', devicePushToken);
           return;
         }
       } else {
-        console.error('Invalid token structure:', devicePushToken);
         return;
       }
 
-      console.log('FCM Token extracted:', fcmToken);
-      console.log('Token length:', fcmToken.length);
-      console.log('Token starts with:', fcmToken.substring(0, 20));
-
       if (!fcmToken || fcmToken.trim() === '') {
-        console.error('FCM token is empty');
         return;
       }
 
       if (!token) {
-        console.error('User token is not available');
         return;
       }
       const response = await updateFcmToken(token, fcmToken);
-      console.log('FCM Token update response:', response.data);
-
-      if (response.data) {
-        console.log('Token successfully sent to backend');
-      }
 
       Notifications.addNotificationReceivedListener((notification) => {
         Alert.alert('📩 إشعار جديد', notification.request.content.body || 'وصل إشعار جديد');
       });
-      Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log('Notification tapped:', response);
+      Notifications.addNotificationResponseReceivedListener(() => {
+        // Notification tapped
       });
     } catch (error: any) {
-      console.error('Notification setup error:', error);
+      // Notification setup error
       if (error.response) {
-        console.error('Error response:', error.response.data);
+        // Error response
       }
     }
   };
@@ -126,7 +106,7 @@ export default function HomeScreen() {
     if (token) {
       getUniversities();
       getCollections();
-      setupNotifications();
+      // setupNotifications();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
@@ -173,14 +153,16 @@ export default function HomeScreen() {
 
   const getCollections = useCallback(() => {
     if (!token) return;
-    showCollections(token)
+    showCollections(token, 1, 3)
       .then((response) => {
         setCollections(response.data.data);
+        console.log(response.data.data);
         getCourses();
         setLoading(false);
       })
       .catch((error: any) => {
         logError(error, 'getCollections');
+        console.log('error is ' + error.message);
         setLoading(false);
         if (__DEV__) {
           showErrorAlert(error, 'خطأ في تحميل العروض');
@@ -284,7 +266,7 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
   },
   adsContainer: {
-    backgroundColor: '#ACCAF2',
+    backgroundColor: '#3F83BF',
     paddingTop: 8,
   },
   universitiesSection: {
@@ -299,7 +281,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     fontWeight: 'bold',
-    backgroundColor: '#ACCAF2',
+    backgroundColor: '#3F83BF',
     padding: 15,
     borderRadius: 12,
     marginHorizontal: '5%',
@@ -316,14 +298,14 @@ const styles = StyleSheet.create({
   },
   seeAllText: {
     fontSize: 16,
-    color: '#035AA6',
+    color: '#ffffff',
     marginTop: 3,
     fontWeight: '600',
   },
   collectionTitle: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#035AA6',
+    color: '#ffffff',
   },
   popularSection: {
     backgroundColor: '#F5F7FA',

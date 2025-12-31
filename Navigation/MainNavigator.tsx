@@ -7,7 +7,6 @@ import {
 } from '@react-navigation/drawer';
 import { useNavigation } from '@react-navigation/native';
 import HomeScreen from '../Screens/HomeScreen';
-// import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Feather } from '@expo/vector-icons';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -49,12 +48,10 @@ export default function MainNavigator() {
           try {
             navigation.navigate('Login');
           } catch {
-            // console.error('Error deleting user data:', error);
             AsyncStorage.removeItem('user');
           }
         })
         .catch(() => {
-          // console.error('Error deleting user data:', error.response.data.message);
           AsyncStorage.removeItem('user');
           navigation.navigate('Login');
         });

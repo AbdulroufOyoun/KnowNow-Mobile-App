@@ -17,7 +17,6 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
-// import { findMovies } from '../data';
 import { SearchScreenSkeleton } from '../Components/SkeletonLoader';
 import { SearchCourses } from '../router/data';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -58,11 +57,9 @@ export default function SearchScreen() {
       SearchCourses(token, title)
         .then((response) => {
           setResults(response.data.data);
-          console.log(response.data.data);
           setLoading(false);
         })
-        .catch((error) => {
-          console.error('Error fetching data: ', error);
+        .catch(() => {
           setLoading(false);
         });
     } else {

@@ -18,8 +18,7 @@ export default function CollectionSubscribeComponent({ route }: any) {
           setSubscribed(true);
           navigation.goBack();
         })
-        .catch((error: any) => {
-          console.log(error.message);
+        .catch(() => {
           setError(true);
           setCode('');
         });

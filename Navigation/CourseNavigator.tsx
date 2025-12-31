@@ -65,10 +65,9 @@ export default function CourseNavigator() {
     coursesContain(userToken, data)
       .then((response: any) => {
         setContain(response.data.data);
-        // console.log(response.data.);
       })
-      .catch((error: any) => {
-        console.log(error);
+      .catch(() => {
+        // Error fetching course content
       });
     // }
     // if (about.length === 0) {
@@ -77,8 +76,8 @@ export default function CourseNavigator() {
         setAbout(response.data.data);
         setLoading(false);
       })
-      .catch((error: any) => {
-        console.log(error.message);
+      .catch(() => {
+        // Error fetching course details
       });
     // }
   };

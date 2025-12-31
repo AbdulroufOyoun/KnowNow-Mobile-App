@@ -11,8 +11,6 @@ export default function MyCoursesNavigation() {
 
   useEffect(() => {
     getUser();
-    // only on mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getUser = async () => {

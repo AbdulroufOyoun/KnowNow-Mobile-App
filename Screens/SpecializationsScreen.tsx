@@ -13,9 +13,8 @@ export default function SpecializationScreen() {
       .then((response) => {
         setSpeclizations(response.data.data);
       })
-      .catch((error: any) => {
-        // ignore
-        console.log(error.message);
+      .catch(() => {
+        // Error fetching specializations
       });
   };
   useEffect(() => {

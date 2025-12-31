@@ -13,9 +13,8 @@ export default function YearScreen() {
       .then((response) => {
         setYears(response.data.data);
       })
-      .catch((error: any) => {
-        // ignore
-        console.log(error.message);
+      .catch(() => {
+        // Error fetching years
       });
   };
   useEffect(() => {

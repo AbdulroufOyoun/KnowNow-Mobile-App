@@ -21,8 +21,7 @@ export default function TopAdsComponent() {
         }
         setLoading(false);
       })
-      .catch((error) => {
-        console.error('Error fetching ads:', error);
+      .catch(() => {
         setLoading(false);
       });
   };

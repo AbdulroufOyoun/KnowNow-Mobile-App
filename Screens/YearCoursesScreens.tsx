@@ -19,6 +19,7 @@ export default function YearCoursesScreen() {
 
   useEffect(() => {
     getCourses();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
   const getCourses = () => {
@@ -32,8 +33,7 @@ export default function YearCoursesScreen() {
         setCourses(response.data.data);
         setLoading(false);
       })
-      .catch((error: any) => {
-        console.log(error.message);
+      .catch(() => {
         setLoading(false);
       });
   };

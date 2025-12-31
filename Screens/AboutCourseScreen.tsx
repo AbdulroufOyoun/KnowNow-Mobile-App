@@ -1,17 +1,6 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import {
-  Text,
-  View,
-  Platform,
-  StatusBar,
-  ImageBackground,
-  StyleSheet,
-  Dimensions,
-  TouchableOpacity,
-  ScrollView,
-  FlatList,
-} from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { Text, View, StyleSheet, Dimensions, ScrollView, FlatList } from 'react-native';
+import { useRoute } from '@react-navigation/native';
 
 const Tab = createMaterialTopTabNavigator();
 const screenHeigh = Dimensions.get('window').height;

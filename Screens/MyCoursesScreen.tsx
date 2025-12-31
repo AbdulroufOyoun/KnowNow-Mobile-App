@@ -17,19 +17,17 @@ export default function MyCoursesScreen() {
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [isConnected, setIsConnected] = useState(false);
   const navigation = useNavigation<any>();
   useEffect(() => {
-    checkInternet();
     getUserData();
-    if (token) {
-      getCourses();
-    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    // Always try to load courses (will check internet inside getCourses)
+    getCourses();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
-  const checkInternet = async () => {
-    const networkState = await Network.getNetworkStateAsync();
-    setIsConnected(!!networkState.isInternetReachable);
-  };
   const getUserData = async () => {
     try {
       const userData = await AsyncStorage.getItem('user');
@@ -45,38 +43,6 @@ export default function MyCoursesScreen() {
       navigation.navigate('Login');
     }
   };
-  // type SavedPDF = {
-  //   name: string;
-  //   uri: string;
-  // };
-
-  // const listSavedPDFs = async (): Promise<SavedPDF[]> => {
-  //   const dirUri = FileSystem.documentDirectory;
-
-  //   if (!dirUri) {
-  //     console.error('Document directory not available.');
-  //     return [];
-  //   }
-
-  //   try {
-  //     const files = await FileSystem.readDirectoryAsync(dirUri);
-
-  //     // Filter only .pdf files
-  //     const pdfFiles = files.filter((file) => file.toLowerCase().endsWith('.pdf'));
-
-  //     // Map to full URIs
-  //     const fullUris = pdfFiles.map((name) => ({
-  //       name,
-  //       uri: `${dirUri}${name}`,
-  //     }));
-
-  //     console.log('Saved PDFs:', fullUris);
-  //     return fullUris;
-  //   } catch (error) {
-  //     console.error('Error reading PDF directory:', error);
-  //     return [];
-  //   }
-  // };
 
   const deletePDF = async (pdfName: string) => {
     const baseDir = (FileSystem.cacheDirectory || FileSystem.documentDirectory || '').replace(
@@ -89,70 +55,112 @@ export default function MyCoursesScreen() {
       const fileInfo = await FileSystem.getInfoAsync(fileUri);
       if (fileInfo.exists) {
         await FileSystem.deleteAsync(fileUri, { idempotent: true });
-      } else {
-        console.log(`PDF not found: ${fileUri}`);
       }
-    } catch (error) {
-      console.error('Error deleting PDF:', error);
+    } catch {
+      // Error deleting PDF
     }
   };
 
   const getCourses = async () => {
-    const storedData = await AsyncStorage.getItem('myCourses');
-    const existingCourses = storedData ? JSON.parse(storedData) : [];
+    try {
+      // Always load from storage first to show data immediately
+      const storedData = await AsyncStorage.getItem('myCourses');
+      const existingCourses = storedData ? JSON.parse(storedData) : [];
 
-    checkInternet();
+      // Show stored data immediately (if available) while checking internet
+      if (existingCourses.length > 0) {
+        setCourses(existingCourses);
+        setLoading(false);
+      }
 
-    if (isConnected) {
-      showMyCourses(token)
-        .then((response) => {
-          const now = new Date().toISOString();
-          const newCourses = response.data.data;
+      // Check internet connection
+      const networkState = await Network.getNetworkStateAsync();
+      const hasInternet = !!networkState.isInternetReachable;
 
-          const newIds = newCourses.map((item: any) => item.id);
+      // If no internet, use stored data only
+      if (!hasInternet) {
+        if (existingCourses.length === 0) {
+          setLoading(false);
+        }
+        return;
+      }
 
-          // Filter out old courses that still exist
-          const filteredExisting = existingCourses.filter((item: any) => newIds.includes(item.id));
+      // If internet is available and we have token, try to fetch from API
+      if (token) {
+        showMyCourses(token)
+          .then((response) => {
+            const now = new Date().toISOString();
+            const newCourses = response.data.data;
 
-          // Collect removed courses
-          const removedCourses = existingCourses.filter((item: any) => !newIds.includes(item.id));
-          if (removedCourses.length > 0) {
-            ShowCoursePdf(token, removedCourses).then((response) => {
-              response.data.forEach((pdfName: any) => {
-                deletePDF(pdfName);
-              });
-            });
-          }
-          // Add new items
-          const mergedCourses = [...filteredExisting];
+            const newIds = newCourses.map((item: any) => item.id);
 
-          newCourses.forEach((newItem: any) => {
-            const alreadyExists = filteredExisting.some(
-              (existingItem: any) => existingItem.id === newItem.id
+            // Filter out old courses that still exist
+            const filteredExisting = existingCourses.filter((item: any) =>
+              newIds.includes(item.id)
             );
 
-            if (!alreadyExists) {
-              mergedCourses.push({
-                ...newItem,
-                added_at: now,
-              });
+            // Collect removed courses
+            const removedCourses = existingCourses.filter((item: any) => !newIds.includes(item.id));
+            if (removedCourses.length > 0) {
+              ShowCoursePdf(token, removedCourses)
+                .then((response) => {
+                  response.data.forEach((pdfName: any) => {
+                    deletePDF(pdfName);
+                  });
+                })
+                .catch(() => {
+                  // Error deleting PDFs, continue anyway
+                });
             }
-          });
+            // Add new items
+            const mergedCourses = [...filteredExisting];
 
-          setCourses(mergedCourses);
+            newCourses.forEach((newItem: any) => {
+              const alreadyExists = filteredExisting.some(
+                (existingItem: any) => existingItem.id === newItem.id
+              );
+
+              if (!alreadyExists) {
+                mergedCourses.push({
+                  ...newItem,
+                  added_at: now,
+                });
+              }
+            });
+
+            setCourses(mergedCourses);
+            setLoading(false);
+            AsyncStorage.setItem('myCourses', JSON.stringify(mergedCourses));
+          })
+          .catch(() => {
+            // If API fails, use stored data as fallback
+            if (existingCourses.length > 0) {
+              setCourses(existingCourses);
+            }
+            setLoading(false);
+          });
+      } else {
+        // No token, use stored data only
+        if (existingCourses.length === 0) {
           setLoading(false);
-          AsyncStorage.setItem('myCourses', JSON.stringify(mergedCourses));
-        })
-        .catch((error) => {
-          console.log(error.message);
-        });
-    } else {
-      setCourses(existingCourses);
+        }
+      }
+    } catch {
+      // If any error occurs, try to load from storage
+      try {
+        const storedData = await AsyncStorage.getItem('myCourses');
+        const existingCourses = storedData ? JSON.parse(storedData) : [];
+        setCourses(existingCourses);
+      } catch {
+        // If storage also fails, show empty
+        setCourses([]);
+      }
+      setLoading(false);
     }
   };
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     setRefreshing(true);
-    getCourses();
+    await getCourses();
     setRefreshing(false);
   };
   return (

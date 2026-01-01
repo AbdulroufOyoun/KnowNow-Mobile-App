@@ -10,8 +10,17 @@
       "tsconfigPaths": true
     },
     "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ],
       "expo-video",
-      "expo-notifications"
+      "expo-notifications",
+      "expo-build-properties"
     ],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -68,6 +77,5 @@
         "projectId": "9a8b2c9a-b699-42fb-a274-0320ed5b11f0"
       }
     }
-    // "owner": "abdulroufoyoun"
   }
 }

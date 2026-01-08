@@ -106,7 +106,7 @@ export default function HomeScreen() {
     if (token) {
       getUniversities();
       getCollections();
-      // setupNotifications();
+      setupNotifications();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);

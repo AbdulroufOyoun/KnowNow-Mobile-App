@@ -1,7 +1,7 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const url = 'https://learnnowsyria.com/api/';
-// const url = 'http://192.168.1.5:8888/api/';
+// const url = 'http://192.168.1.8:8888/api/';
 
 export async function getUserData(): Promise<string | null> {
   try {

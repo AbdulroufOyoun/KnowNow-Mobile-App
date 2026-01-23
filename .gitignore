@@ -9,7 +9,7 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
-athar-59955-firebase-adminsdk-fbsvc-2d9d820f40.json
+# athar-59955-firebase-adminsdk-fbsvc-2d9d820f40.json
 *.json
 !app.json
 !package.json

@@ -2,8 +2,8 @@
   "name": "KnowNow",
   "version": "1.0.0",
   "scripts": {
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "start": "expo start",
     "prebuild": "expo prebuild",
     "lint": "eslint \"**/*.{js,jsx,ts,tsx}\" && prettier -c \"**/*.{js,jsx,ts,tsx,json}\"",
@@ -29,6 +29,7 @@
     "expo-notifications": "~0.32.13",
     "expo-screen-capture": "~8.0.8",
     "expo-status-bar": "~3.0.8",
+    "expo-system-ui": "~6.0.9",
     "expo-video": "~3.0.14",
     "nativewind": "4.1.21",
     "react": "19.1.0",

@@ -22,9 +22,10 @@
         "expo-build-properties",
         {
           "android": {
+            "ndkVersion": "27.1.12297006", // إصدار NDK يدعم 16KB بشكل رسمي
             "packagingOptions": {
-              "jniLibs": {
-                "useLegacyPackaging": false
+            "jniLibs": {
+              "useLegacyPackaging": false
               }
             }
           }

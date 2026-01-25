@@ -70,7 +70,7 @@
       },
       "package": "com.abdulroufoyoun.KnowNow",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 20,
+      "versionCode": 21,
       "permissions": [
         "INTERNET",
         "ACCESS_NETWORK_STATE",

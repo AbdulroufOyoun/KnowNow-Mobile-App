@@ -2,7 +2,7 @@
   "expo": {
     "name": "تعلَّم الآن",
     "slug": "KnowNow",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "web": {
       "favicon": "./assets/icon.png"
     },
@@ -24,8 +24,8 @@
           "android": {
             "ndkVersion": "27.1.12297006", // إصدار NDK يدعم 16KB بشكل رسمي
             "packagingOptions": {
-            "jniLibs": {
-              "useLegacyPackaging": false
+              "jniLibs": {
+                "useLegacyPackaging": false
               }
             }
           }
@@ -76,7 +76,7 @@
         "ACCESS_NETWORK_STATE",
         "RECEIVE_BOOT_COMPLETED",
         "VIBRATE"
-        ],
+      ],
       "blockedPermissions": [
         "CAMERA",
         "READ_EXTERNAL_STORAGE",

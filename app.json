@@ -2,7 +2,7 @@
   "expo": {
     "name": "تعلَّم الآن",
     "slug": "KnowNow",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "web": {
       "favicon": "./assets/icon.png"
     },
@@ -15,14 +15,9 @@
         {
           "ios": {
             "useFrameworks": "static"
-          }
-        }
-      ],
-      [
-        "expo-build-properties",
-        {
+          },
           "android": {
-            "ndkVersion": "27.1.12297006", // إصدار NDK يدعم 16KB بشكل رسمي
+            "ndkVersion": "27.1.12297006",
             "packagingOptions": {
               "jniLibs": {
                 "useLegacyPackaging": false
@@ -70,7 +65,7 @@
       },
       "package": "com.abdulroufoyoun.KnowNow",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 21,
+      "versionCode": 22,
       "permissions": [
         "INTERNET",
         "ACCESS_NETWORK_STATE",

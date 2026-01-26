@@ -156,7 +156,6 @@ export default function HomeScreen() {
     showCollections(token, 1, 3)
       .then((response) => {
         setCollections(response.data.data);
-        console.log(response.data.data);
         getCourses();
         setLoading(false);
       })

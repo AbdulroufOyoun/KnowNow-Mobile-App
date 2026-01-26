@@ -45,8 +45,6 @@ export function showMedia() {
 
 // Collections
 export function showCollections(token: any, page = 1, perPage = 10) {
-  console.log(token);
-
   return axios.get(url + 'show_collections', {
     headers: {
       'Content-Type': 'application/json',

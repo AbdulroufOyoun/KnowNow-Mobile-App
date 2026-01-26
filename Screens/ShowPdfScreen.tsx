@@ -11,7 +11,6 @@ export default function ShowPdfScreen() {
 
   useEffect(() => {
     // منع تصوير الشاشة
-    console.log('PDF to show:', pdf);
 
     ScreenCapture.preventScreenCaptureAsync();
     return () => {

@@ -2,7 +2,7 @@
   "expo": {
     "name": "تعلَّم الآن",
     "slug": "KnowNow",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "web": {
       "favicon": "./assets/icon.png"
     },
@@ -65,7 +65,7 @@
       },
       "package": "com.abdulroufoyoun.KnowNow",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 22,
+      "versionCode": 23,
       "permissions": [
         "INTERNET",
         "ACCESS_NETWORK_STATE",

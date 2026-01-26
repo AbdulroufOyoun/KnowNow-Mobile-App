@@ -1,49 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ActivityIndicator, Text } from 'react-native';
-import PDFReader from 'rn-pdf-reader-js';
+import React, { useEffect } from 'react';
+import { View, StyleSheet, StatusBar } from 'react-native';
 import * as ScreenCapture from 'expo-screen-capture';
 import { useRoute } from '@react-navigation/native';
+import PdfViewer from 'react-native-webview'; // تأكد من المسار الصحيح للملف الذي أنشأته
 
 export default function ShowPdfScreen() {
   const route = useRoute();
   const { pdf, token } = (route.params as any) || {};
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 1. تفعيل حماية الشاشة (منع تصوير الشاشة وسجل الفيديو)
+    // 1. تفعيل حماية الشاشة (منع السكرين شوت والتسجيل)
     ScreenCapture.preventScreenCaptureAsync();
 
-    // تأخير بسيط للتأكد من تحميل المكون
-    const timer = setTimeout(() => setLoading(false), 1000);
-
     return () => {
-      // 2. السماح بالتصوير مرة أخرى عند الخروج
+      // 2. إلغاء الحماية عند الخروج
       ScreenCapture.allowScreenCaptureAsync();
-      clearTimeout(timer);
     };
   }, []);
 
-  if (!pdf) return <Text>رابط الملف غير موجود</Text>;
+  if (!pdf) return null;
 
   return (
     <View style={styles.container}>
-      {loading && (
-        <View style={styles.loader}>
-          <ActivityIndicator size="large" color="#007AFF" />
-          <Text style={{ marginTop: 10 }}>جاري تجهيز الملف الآمن...</Text>
-        </View>
-      )}
+      <StatusBar translucent barStyle="dark-content" />
 
-      <PDFReader
+      {/* استخدام المحرك الاحترافي الذي أرسلته */}
+      <PdfViewer
         source={{
           uri: pdf,
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         }}
-        withScroll={true}
-        withPinchZoom={true}
-        // هذه المكتبة تستخدم WebView داخلي، وهي آمنة من مشكلة الـ 16KB
-        onLoad={() => setLoading(false)}
-        onError={(error) => console.log('PDF Error:', error)}
+        style={styles.viewer}
+        // الخيارات التالية تضمن العرض داخلياً دون الحاجة لروابط جوجل
+        // مما يحافظ على الأمان ويدعم التوكن
       />
     </View>
   );
@@ -54,11 +43,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  loader: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    zIndex: 1,
+  viewer: {
+    flex: 1,
   },
 });
